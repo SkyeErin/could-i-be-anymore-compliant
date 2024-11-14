@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sign up for our mailing list to stay informed on the magical privacy debate.">
     <title>Join Our Mailing List!</title>
+
+    <script type="text/javascript" src="https://s.uc.osano.com/sdk/latest.min.js" crossorigin="anonymous"></script> 
+<script type="text/javascript" crossorigin="anonymous"> 
+   const { UnifiedConsentByOsanoSDK } = window.unifiedConsentJsSdk 
+   if(window.navigator.globalPrivacyControl) { 
+     UnifiedConsentByOsanoSDK.getToken({ 
+       issuer: 'https://uc.api.osano.com/v2/token/create', 
+       configId: '411811b1-f74e-4983-8338-f49aa02cc0b8', 
+       customerId: 'AzZcmYSAwgobK6dI', 
+     }).then(token => { 
+       UnifiedConsentByOsanoSDK.registerPrivacyProtocols({ 
+         apiUrl: 'https://uc.api.osano.com/v2/', 
+         token 
+       }) 
+     }) 
+   } 
+</script>
+    
     <script>
         window.dataLayer = window.dataLayer ||[];
         function gtag(){dataLayer.push(arguments);}
