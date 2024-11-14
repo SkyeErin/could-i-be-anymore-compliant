@@ -181,5 +181,68 @@
         </p>
     </footer>
 
+    
+    <script>
+        // Initialize global variable to store user consent identifier
+        let userConsentId = null;
+
+        console.log("Initializing Osano Unified Consent SDK...");
+
+        // 1. Initialize Osano's Unified Consent SDK
+        window.unifiedConsentJsSdkUnifiedConsentByOsanoSDK.init({
+            onConsentUpdated: (consentData) => {
+                console.log("Consent data received:", consentData);
+
+                // 2. Check if user has provided consent
+                if (consentData && consentData.consentId) {
+                    // Save the consent ID for later use
+                    userConsentId = consentData.consentId;
+                    console.log('Consent recorded with ID:', userConsentId);
+                } else {
+                    console.warn('No consent ID found in consentData:', consentData);
+                }
+            }
+        });
+
+        // 3. Form submission handler to associate email with consent record
+        document.getElementById('mailing-list-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const email = document.getElementById('email').value;
+            console.log("Form submitted with email:", email);
+
+            if (userConsentId) {
+                console.log("User consent ID available:", userConsentId);
+                
+                // Prepare form data for submission
+                const formData = new FormData(this);
+                formData.append('consent_id', userConsentId);
+
+                console.log("Form data prepared for submission:", Array.from(formData.entries()));
+
+                // Send form data to the backend
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('Form submitted successfully with consent ID:', userConsentId);
+                        alert('Subscription successful! Your consent has been recorded.');
+                    } else {
+                        console.error('Error submitting form. Response status:', response.status);
+                        alert('There was an error. Please try again.');
+                    }
+                }).catch(error => {
+                    console.error('Submission error:', error);
+                    alert('There was an error submitting the form. Please try again.');
+                });
+            } else {
+                console.warn("No consent ID found. User needs to provide consent first.");
+                alert('Please provide consent first.');
+            }
+        });
+    </script>
+
 </body>
 </html>
+
