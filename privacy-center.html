@@ -6,38 +6,38 @@
     <meta name="description" content="Explore the privacy implications of magical artifacts in the Harry Potter universe, such as the Invisibility Cloak and Marauder's Map.">
     <title>Privacy in the Harry Potter Universe</title>
 
-<script type="text/javascript" src="https://s.uc.osano.com/sdk/latest.min.js" crossorigin="anonymous"></script> 
-<script type="text/javascript" crossorigin="anonymous"> 
-   const { UnifiedConsentByOsanoSDK } = window.unifiedConsentJsSdk 
-   if(window.navigator.globalPrivacyControl) { 
-     UnifiedConsentByOsanoSDK.getToken({ 
-       issuer: 'https://uc.api.osano.com/v2/token/create', 
-       configId: '8d7da794-7e0c-435c-a8bf-3ca671f80fd3', 
-       customerId: 'AzZcpvRm9bbsqngN', 
-     }).then(token => { 
-       UnifiedConsentByOsanoSDK.registerPrivacyProtocols({ 
-         apiUrl: 'https://uc.api.osano.com/v2/', 
-         token 
-       }) 
-     }) 
-   } 
-</script>
+    <script type="text/javascript" src="https://s.uc.osano.com/sdk/latest.min.js" crossorigin="anonymous"></script> 
+    <script type="text/javascript" crossorigin="anonymous"> 
+       const { UnifiedConsentByOsanoSDK } = window.unifiedConsentJsSdk;
+       if (window.navigator.globalPrivacyControl) { 
+         UnifiedConsentByOsanoSDK.getToken({ 
+           issuer: 'https://uc.api.osano.com/v2/token/create', 
+           configId: '8d7da794-7e0c-435c-a8bf-3ca671f80fd3', 
+           customerId: 'AzZcpvRm9bbsqngN', 
+         }).then(token => { 
+           UnifiedConsentByOsanoSDK.registerPrivacyProtocols({ 
+             apiUrl: 'https://uc.api.osano.com/v2/', 
+             token 
+           }); 
+         }); 
+       } 
+    </script>
 
     <script>
-  window.dataLayer = window.dataLayer ||[];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('consent','default',{
-    'ad_storage':'denied',
-    'analytics_storage':'denied',
-    'ad_user_data':'denied',
-    'ad_personalization':'denied',
-    'personalization_storage':'denied',
-    'functionality_storage':'granted',
-    'security_storage':'granted',
-    'wait_for_update': 500
-  });
-  gtag("set", "ads_data_redaction", true);
-</script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'analytics_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'personalization_storage': 'denied',
+            'functionality_storage': 'granted',
+            'security_storage': 'granted',
+            'wait_for_update': 500
+        });
+        gtag("set", "ads_data_redaction", true);
+    </script>
     
     <script src="https://cmp.osano.com/AzZcpvRm9bbsqngN/627e5e74-8a01-47df-8d04-116e0ef84981/osano.js"></script> 
     
@@ -97,15 +97,12 @@
         .osano-cm-widget {
             display: none;
         }
-        /* Remove all padding and margin from the body and make it full viewport height */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             width: 100%;
         }
-
-        /* Style for main to fill entire viewport */
         main {
             display: flex;
             justify-content: center;
@@ -115,8 +112,6 @@
             margin: 0;
             padding: 0;
         }
-
-        /* Fullscreen iframe styling */
         #osano-uc-iframe {
             border: none;
             width: 100%;
@@ -132,10 +127,22 @@
 
     <main>
         <iframe id="osano-uc-iframe" src="https://unifiedconsent.osano.com/314/"></iframe> 
+        
         <script type="text/javascript" crossorigin="anonymous"> 
            window.unifiedConsentJsSdkUnifiedConsentByOsanoSDK.initEmbeddedParent({ 
              targetIframe: document.getElementById('osano-uc-iframe') 
-           }); 
+           });
+
+           // Event listener to capture consent and email
+           UnifiedConsentByOsanoSDK.on('consent', async (consentData) => {
+               // Check if email is provided in the consent data
+               if (consentData && consentData.user && consentData.user.email) {
+                   const userEmail = consentData.user.email;
+                   console.log('User Email:', userEmail); // Log email to console
+               } else {
+                   console.log('No email provided by user.');
+               }
+           });
         </script>
     </main>
 
