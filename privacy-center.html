@@ -139,6 +139,34 @@
         </script>
     </main>
 
+    <script>
+        // Retrieve the email from Osano once it's available
+        function retrieveEmailFromOsano() {
+            osanoClient.getProfile().then(profile => {
+                const email = profile.email;  // Assuming Osano already captures the email
+                if (email) {
+                    console.log('Captured email from Osano:', email);
+
+                    // Push the email to the data layer
+                    window.dataLayer.push({
+                        event: 'userProfileUpdated',
+                        userEmail: email
+                    });
+
+                    // Log the updated data layer
+                    console.log('Data Layer updated:', window.dataLayer);
+                } else {
+                    console.error('No email found in Osano profile.');
+                }
+            }).catch((error) => {
+                console.error('Error retrieving profile:', error);
+            });
+        }
+
+        // Call the function to retrieve email after Osano initialization
+        retrieveEmailFromOsano();
+    </script>
+
     <!-- Go Home Link -->
     <a href="https://skyeerin.github.io/could-i-be-anymore-compliant/" class="go-home">Go Home</a>
    
