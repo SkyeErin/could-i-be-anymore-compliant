@@ -34,18 +34,16 @@
     src="https://clientapps.osano.com/uc-opt/index.js"
   ></script>
 
-  <!-- ✅ Redirect if analytics consent is denied -->
-  <script>
-    document.addEventListener("OsanoConsentUpdated", function () {
-      // Wait until Osano has returned the user's selections
-      Osano.cm.getConsent(function (consent) {
-        // If analytics category is NOT consented to, redirect
-        if (!consent.analytics) {
-          window.location.href = "index.html";
-        }
-      });
-    });
-  </script>
+  <!-- ✅ Redirect if consent is denied -->
+<script>
+  document.addEventListener("osano-cm-consent-saved", async function () {
+    const hasConsent = await Osano.cm.hasConsented("AzZcpvRm9bbsqngN", "ef01f335-67fe-4054-8555-e60c88fa7468");
+
+    if (hasConsent === false) {
+      window.location.href = "index.html";
+    }
+  });
+</script>
 </head>
 <body>
 
