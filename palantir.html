@@ -36,26 +36,23 @@
 
   <!-- ✅ Redirect if consent is denied -->
 <script>
-  document.addEventListener("osano-cm-consent-saved", async function () {
-    console.log("Consent saved event fired.");
+    // Function to handle the consent submission event
+    function onConsentSubmit(path, data) {
+        // Check if the user has consented
+        const hasConsented = Object.values(data).some(value => value === true);
 
-    const customerId = "AzZcpvRm9bbsqngN";
-    const configId = "ef01f335-67fe-4054-8555-e60c88fa7468";
-
-    try {
-      const hasConsent = await Osano.cm.hasConsented(customerId, configId);
-      console.log("hasConsented result:", hasConsent);
-
-      if (hasConsent === false) {
-        console.log("No consent given. Redirecting to index.html...");
-        window.location.href = "index.html";
-      } else {
-        console.log("Consent was given. No redirect.");
-      }
-    } catch (err) {
-      console.error("Error checking consent:", err);
+        if (hasConsented) {
+            // If consent is true, log true
+            console.log(true);
+        } else {
+            // If consent is false, log false and redirect
+            console.log(false);
+            window.history.back(); // Redirect back to the previous page
+        }
     }
-  });
+
+    // Add event listener for the 'submit' event
+    window.Osano.prompt.addEventListener('submit', onConsentSubmit);
 </script>
 </head>
 <body>
