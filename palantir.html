@@ -33,6 +33,19 @@
     data-customer-id="AzZcpvRm9bbsqngN"
     src="https://clientapps.osano.com/uc-opt/index.js"
   ></script>
+
+  <!-- ✅ Redirect if analytics consent is denied -->
+  <script>
+    document.addEventListener("OsanoConsentUpdated", function () {
+      // Wait until Osano has returned the user's selections
+      Osano.cm.getConsent(function (consent) {
+        // If analytics category is NOT consented to, redirect
+        if (!consent.analytics) {
+          window.location.href = "index.html";
+        }
+      });
+    });
+  </script>
 </head>
 <body>
 
@@ -47,7 +60,7 @@
   </p>
 
   <p>
-    The ethical dilemma of the Palantír lies in **who is watching, and who controls the narrative**. Transparency and oversight become essential. Just like the characters in Tolkien’s world, we must ask: when we gaze into our own Palantír, are we learning the truth—or only what someone wants us to see?
+    The ethical dilemma of the Palantír lies in <strong>who is watching, and who controls the narrative</strong>. Transparency and oversight become essential. Just like the characters in Tolkien’s world, we must ask: when we gaze into our own Palantír, are we learning the truth—or only what someone wants us to see?
   </p>
 
   <div class="video-wrapper">
@@ -64,3 +77,4 @@
 
 </body>
 </html>
+
