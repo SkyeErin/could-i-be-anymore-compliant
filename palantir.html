@@ -37,10 +37,23 @@
   <!-- ✅ Redirect if consent is denied -->
 <script>
   document.addEventListener("osano-cm-consent-saved", async function () {
-    const hasConsent = await Osano.cm.hasConsented("AzZcpvRm9bbsqngN", "ef01f335-67fe-4054-8555-e60c88fa7468");
+    console.log("Consent saved event fired.");
 
-    if (hasConsent === false) {
-      window.location.href = "index.html";
+    const customerId = "AzZcpvRm9bbsqngN";
+    const configId = "ef01f335-67fe-4054-8555-e60c88fa7468";
+
+    try {
+      const hasConsent = await Osano.cm.hasConsented(customerId, configId);
+      console.log("hasConsented result:", hasConsent);
+
+      if (hasConsent === false) {
+        console.log("No consent given. Redirecting to index.html...");
+        window.location.href = "index.html";
+      } else {
+        console.log("Consent was given. No redirect.");
+      }
+    } catch (err) {
+      console.error("Error checking consent:", err);
     }
   });
 </script>
