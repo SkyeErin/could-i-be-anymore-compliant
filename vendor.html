@@ -1,119 +1,141 @@
-import React from "react";
-import {
-  ShieldCheck,
-  FileText,
-  Lock,
-  AlertCircle,
-} from "lucide-react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Privacy Dashboard</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9fafb;
+      padding: 20px;
+    }
+    .vendor-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .vendor-card {
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      padding: 16px;
+      background: white;
+    }
+    .vendor-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    .vendor-domain {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .vendor-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .progress-bar-wrapper {
+      height: 6px;
+      background: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-bar {
+      height: 6px;
+      border-radius: 4px;
+    }
+    .score-low {
+      color: #c53030;
+      background-color: #f56565;
+    }
+    .score-medium {
+      color: #b7791f;
+      background-color: #f6ad55;
+    }
+    .score-high {
+      color: #2f855a;
+      background-color: #48bb78;
+    }
+    .vendor-info p {
+      margin: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .details-button {
+      margin-top: 12px;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+      cursor: pointer;
+    }
+    .details-button:hover {
+      background: #eee;
+    }
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
 
-const mockVendors = [
-  {
-    id: 1,
-    name: "Matomo",
-    domain: "matomo.org",
-    score: 36,
-    documents: ["Privacy Policy", "Cookie Policy", "Terms of Service"],
-    subprocessors: 5,
-    alerts: 2,
-  },
-  {
-    id: 2,
-    name: "GreatAmerica Financial",
-    domain: "greatamerica.com",
-    score: 33,
-    documents: ["Privacy Policy"],
-    subprocessors: 0,
-    alerts: 1,
-  },
-  {
-    id: 3,
-    name: "CCI South Africa",
-    domain: "cci-sa.co.za",
-    score: 37,
-    documents: ["Privacy Policy", "Cookie Notice"],
-    subprocessors: 0,
-    alerts: 0,
-  },
-  {
-    id: 4,
-    name: "American Express",
-    domain: "americanexpress.com",
-    score: 39,
-    documents: ["Privacy Policy", "Subprocessor List"],
-    subprocessors: 11,
-    alerts: 4,
-  },
-  {
-    id: 5,
-    name: "Batch",
-    domain: "batch.com",
-    score: 82,
-    documents: ["Privacy Policy", "Terms of Use", "Security Notice"],
-    subprocessors: 0,
-    alerts: 0,
-  },
-];
+<h1>Vendor Privacy Dashboard</h1>
+<div class="vendor-grid" id="vendorGrid"></div>
 
-const getScoreColor = (score) => {
-  if (score <= 35) return "bg-red-500 text-red-600";
-  if (score <= 65) return "bg-yellow-500 text-yellow-600";
-  return "bg-green-500 text-green-600";
-};
+<script>
+  const vendors = [
+    { name: "Matomo", domain: "matomo.org", score: 36, docs: 3, subprocessors: 5, alerts: 2 },
+    { name: "GreatAmerica Financial", domain: "greatamerica.com", score: 33, docs: 1, subprocessors: 0, alerts: 1 },
+    { name: "CCI South Africa", domain: "cci-sa.co.za", score: 37, docs: 2, subprocessors: 0, alerts: 0 },
+    { name: "American Express", domain: "americanexpress.com", score: 39, docs: 2, subprocessors: 11, alerts: 4 },
+    { name: "Batch", domain: "batch.com", score: 82, docs: 3, subprocessors: 0, alerts: 0 }
+  ];
 
-const getIconColor = (score) => {
-  if (score <= 35) return "text-red-500";
-  if (score <= 65) return "text-yellow-500";
-  return "text-green-500";
-};
+  const getScoreClass = (score) => {
+    if (score <= 35) return "score-low";
+    if (score <= 65) return "score-medium";
+    return "score-high";
+  };
 
-const VendorPrivacyCard = ({ vendor }) => {
-  return (
-    <div className="rounded-xl shadow-md p-4 border border-gray-200 bg-white">
-      <div className="flex flex-col gap-2">
-        <div className="text-xl font-semibold text-gray-800">{vendor.name}</div>
-        <div className="text-sm text-gray-500">{vendor.domain}</div>
-        <div
-          className={`flex items-center gap-2 text-sm ${getScoreColor(vendor.score)}`}
-        >
-          <ShieldCheck className={`w-4 h-4 ${getIconColor(vendor.score)}`} />
-          Privacy Score: <strong>{vendor.score}/100</strong>
+  const grid = document.getElementById("vendorGrid");
+
+  vendors.forEach(v => {
+    const scoreClass = getScoreClass(v.score);
+    const card = document.createElement("div");
+    card.className = "vendor-card";
+    card.innerHTML = `
+      <div class="vendor-header">
+        <h2>${v.name}</h2>
+        <p class="vendor-domain">${v.domain}</p>
+        <div class="vendor-score ${scoreClass}">
+          <i data-lucide="shield-check" class="icon"></i>
+          Privacy Score: <strong>${v.score}/100</strong>
         </div>
-        <div className="w-full mt-2 h-2 rounded bg-gray-200 overflow-hidden">
-          <div
-            className={`h-full ${getScoreColor(vendor.score).split(" ")[0]}`}
-            style={{ width: `${vendor.score}%` }}
-          />
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar ${scoreClass}" style="width: ${v.score}%"></div>
         </div>
       </div>
-      <div className="mt-4 text-sm flex flex-col gap-3 text-gray-700">
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4" />
-          Key Docs: {vendor.documents.length} uploaded
-        </div>
-        <div className="flex items-center gap-2">
-          <Lock className="w-4 h-4" />
-          Subprocessors: {vendor.subprocessors}
-        </div>
-        <div className="flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-yellow-500" />
-          Alerts: {vendor.alerts || 0} flagged changes
-        </div>
-        <button className="mt-4 text-sm bg-gray-100 hover:bg-gray-200 rounded px-3 py-1">
-          View Vendor Details
-        </button>
+      <div class="vendor-info">
+        <p><i data-lucide="file-text" class="icon"></i> Key Docs: ${v.docs}</p>
+        <p><i data-lucide="lock" class="icon"></i> Subprocessors: ${v.subprocessors}</p>
+        <p><i data-lucide="alert-circle" class="icon"></i> Alerts: ${v.alerts}</p>
+        <button class="details-button">View Vendor Details</button>
       </div>
-    </div>
-  );
-};
+    `;
+    grid.appendChild(card);
+  });
 
-const VendorDashboard = () => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-gray-50 min-h-screen">
-      {mockVendors.map((vendor) => (
-        <VendorPrivacyCard key={vendor.id} vendor={vendor} />
-      ))}
-    </div>
-  );
-};
+  lucide.createIcons();
+</script>
 
-export default VendorDashboard;
+</body>
+</html>
