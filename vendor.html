@@ -2,84 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vendor Privacy Dashboard</title>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #f9fafb;
-      padding: 20px;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+      padding: 40px 20px;
     }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #111;
+    }
+
     .vendor-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
+
     .vendor-card {
-      width: 300px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 16px;
-      background: white;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
     }
+
+    .vendor-card:hover {
+      transform: translateY(-4px);
+    }
+
     .vendor-header h2 {
       margin: 0;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
     }
+
     .vendor-domain {
-      color: #666;
       font-size: 0.9rem;
-      margin-bottom: 8px;
+      color: #6b7280;
+      margin-bottom: 12px;
     }
+
     .vendor-score {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 500;
-      margin-bottom: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 10px;
     }
+
     .progress-bar-wrapper {
-      height: 6px;
-      background: #eee;
-      border-radius: 4px;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 9999px;
       overflow: hidden;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
+
     .progress-bar {
-      height: 6px;
-      border-radius: 4px;
+      height: 100%;
+      border-radius: 9999px;
     }
-    .score-low {
-      color: #c53030;
-      background-color: #f56565;
+
+    .bar-low {
+      background: #ef4444;
     }
-    .score-medium {
-      color: #b7791f;
-      background-color: #f6ad55;
+
+    .bar-medium {
+      background: #f59e0b;
     }
-    .score-high {
-      color: #2f855a;
-      background-color: #48bb78;
+
+    .bar-high {
+      background: #10b981;
     }
+
     .vendor-info p {
-      margin: 6px 0;
       display: flex;
       align-items: center;
-      gap: 6px;
+      font-size: 0.9rem;
+      margin: 8px 0;
+      gap: 8px;
+      color: #374151;
     }
+
     .details-button {
-      margin-top: 12px;
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background: #f9f9f9;
+      margin-top: 16px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #f3f4f6;
+      font-size: 0.9rem;
       cursor: pointer;
+      color: #111827;
+      transition: background 0.2s ease;
     }
+
     .details-button:hover {
-      background: #eee;
+      background: #e5e7eb;
     }
+
     .icon {
       width: 16px;
       height: 16px;
@@ -93,35 +129,36 @@
 
 <script>
   const vendors = [
-    { name: "Matomo", domain: "matomo.org", score: 36, docs: 3, subprocessors: 5, alerts: 2 },
-    { name: "GreatAmerica Financial", domain: "greatamerica.com", score: 33, docs: 1, subprocessors: 0, alerts: 1 },
-    { name: "CCI South Africa", domain: "cci-sa.co.za", score: 37, docs: 2, subprocessors: 0, alerts: 0 },
-    { name: "American Express", domain: "americanexpress.com", score: 39, docs: 2, subprocessors: 11, alerts: 4 },
-    { name: "Batch", domain: "batch.com", score: 82, docs: 3, subprocessors: 0, alerts: 0 }
+    { name: "Google", domain: "google.com", score: 88, docs: 5, subprocessors: 12, alerts: 1 },
+    { name: "Meta (Facebook)", domain: "facebook.com", score: 32, docs: 3, subprocessors: 20, alerts: 4 },
+    { name: "Salesforce", domain: "salesforce.com", score: 70, docs: 4, subprocessors: 10, alerts: 0 },
+    { name: "TikTok", domain: "tiktok.com", score: 29, docs: 2, subprocessors: 15, alerts: 5 },
+    { name: "Zoom", domain: "zoom.us", score: 66, docs: 4, subprocessors: 8, alerts: 1 },
+    { name: "DuckDuckGo", domain: "duckduckgo.com", score: 92, docs: 3, subprocessors: 1, alerts: 0 },
   ];
 
-  const getScoreClass = (score) => {
-    if (score <= 35) return "score-low";
-    if (score <= 65) return "score-medium";
-    return "score-high";
+  const getBarClass = (score) => {
+    if (score <= 35) return "bar-low";
+    if (score <= 65) return "bar-medium";
+    return "bar-high";
   };
 
   const grid = document.getElementById("vendorGrid");
 
   vendors.forEach(v => {
-    const scoreClass = getScoreClass(v.score);
+    const barClass = getBarClass(v.score);
     const card = document.createElement("div");
     card.className = "vendor-card";
     card.innerHTML = `
       <div class="vendor-header">
         <h2>${v.name}</h2>
         <p class="vendor-domain">${v.domain}</p>
-        <div class="vendor-score ${scoreClass}">
+        <div class="vendor-score">
           <i data-lucide="shield-check" class="icon"></i>
           Privacy Score: <strong>${v.score}/100</strong>
         </div>
         <div class="progress-bar-wrapper">
-          <div class="progress-bar ${scoreClass}" style="width: ${v.score}%"></div>
+          <div class="progress-bar ${barClass}" style="width: ${v.score}%"></div>
         </div>
       </div>
       <div class="vendor-info">
