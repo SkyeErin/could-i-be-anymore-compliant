@@ -23,6 +23,34 @@
     gtag("set", "ads_data_redaction", true);
   </script>
 
+
+<script>
+    // Preload Osano data
+    ;(function(w, o, d) {
+        w[o] = w[o] || function() {
+            w[o][d].push(arguments);
+        };
+        w[o][d] = w[o][d] || [];
+    })(window, 'Osano', 'data');
+
+    // Wait for Osano to initialize
+    Osano.cm.addEventListener('osano-cm-initialized', () => {
+        console.log('[Osano] Initialized');
+ 
+        // Get the user's jurisdiction
+        const jurisdiction = window.Osano.cm.jurisdiction;
+ 
+        // Check if the user is in the US (excluding California and Texas)
+        if (jurisdiction && jurisdiction.startsWith('us') && jurisdiction !== 'us-ca' && jurisdiction !== 'us-tx') {
+            console.log('[Osano] User is in the US (outside California and Texas). Hiding dialog...');
+            Osano.cm.hideDialog();
+        } else {
+            console.log('[Osano] User is outside the US or in California or Texas. Dialog remains visible.');
+        }
+    });
+</script>
+
+  
   <!-- Osano Consent Manager -->
   <script src="https://cmp.osano.com/AzZcpvRm9bbsqngN/627e5e74-8a01-47df-8d04-116e0ef84981/osano.js"></script>
 
