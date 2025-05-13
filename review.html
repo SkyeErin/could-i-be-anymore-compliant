@@ -96,6 +96,7 @@
       color: #555;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
   <h1>Osano Implementation Self-Review</h1>
@@ -209,17 +210,25 @@
   report.style.display = 'block';
   downloadBtn.style.display = 'inline-block';
 }
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-      doc.html(document.getElementById('report'), {
-        callback: function (pdf) {
-          pdf.save('osano-implementation-review.pdf');
-        },
-        x: 20,
-        y: 20
-      });
-    });
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const reportEl = document.getElementById('report');
+  html2canvas(reportEl, {
+    scale: 2,
+    scrollY: -window.scrollY,
+    useCORS: true
+  }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'pt', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth - 40;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+    pdf.save('osano-implementation-review.pdf');
+  });
+});
   </script>
 </body>
 </html>
