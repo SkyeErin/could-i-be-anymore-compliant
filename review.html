@@ -21,6 +21,13 @@
       color: #7A3FF1;
     }
 
+    .section-header {
+      margin-top: 40px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #7A3FF1;
+      font-size: 1.25em;
+    }
+
     .question {
       margin: 20px 0;
       padding: 15px;
@@ -93,32 +100,41 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     const checks = [
-      // CMP Installation
-      { name: 'headScript', label: 'Is osano.js placed in the <head> without async/defer?', text: 'Move osano.js to the <head> and remove async/defer to ensure it loads immediately and blocks pre-consent trackers.', risk: 'high' },
-      { name: 'preScripts', label: 'Are any non-essential scripts running before Osano?', text: 'Ensure scripts are delayed until Osano loads and consent is given to comply with privacy laws.', risk: 'high' },
-      { name: 'republish', label: 'Has the CMP been republished in the last 1–3 months?', text: 'Republish CMP to ensure any recent script or ruleset changes are captured in production.', risk: 'low' },
+      // Installation
+      { section: 'Installation', name: 'inHead', label: 'Is osano.js placed in the <head>?', text: 'To properly block non-essential scripts before consent, osano.js must be placed inside the <head> tag.', risk: 'high' },
+      { section: 'Installation', name: 'noAsyncDefer', label: 'Is osano.js loaded without async/defer?', text: 'Ensure the script is not marked async or defer so that it executes immediately, ensuring consent enforcement.', risk: 'high' },
+      { section: 'Installation', name: 'strictMode', label: 'Is your Osano configuration in "Strict" mode?', text: 'Strict mode enforces blocking of all non-essential cookies until explicit user consent. This is the most privacy-conscious configuration.', risk: 'high' },
 
-      // Classification & Rule Quality
-      { name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.', risk: 'high' },
-      { name: 'groupedCategories', label: 'Are classifications grouped into useful categories?', text: 'Organize scripts/cookies into actionable groups to improve both usability and audit accuracy.', risk: 'medium' },
-      { name: 'misclassified', label: 'Are there any mass misclassifications (e.g., all hidden/essential)?', text: 'Avoid mislabeling all items the same category. Misclassification can lead to non-compliance.', risk: 'high' },
+      // Classification
+      { section: 'Classification', name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.', risk: 'high' },
+      { section: 'Classification', name: 'groupedCategories', label: 'Are classifications grouped into useful categories?', text: 'Organize scripts/cookies into actionable groups to improve both usability and audit accuracy.', risk: 'medium' },
+      { section: 'Classification', name: 'misclassified', label: 'Are there any mass misclassifications (e.g., all hidden/essential)?', text: 'Avoid mislabeling all items the same category. Misclassification can lead to non-compliance.', risk: 'high' },
+      { section: 'Classification', name: 'cookieDisclosure', label: 'Are all, some, or none of your cookies disclosed?', text: 'Full cookie disclosure is recommended for transparency. Disclosing some is acceptable, while disclosing none is risky.', risk: 'medium' },
 
-      // Regulatory Settings
-      { name: 'usOptOut', label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?', text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules.', risk: 'high' },
-      { name: 'gpc', label: 'Is GPC (Global Privacy Control) enabled?', text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA.', risk: 'high' },
-      { name: 'dnt', label: 'Is DNT (Do Not Track) enabled?', text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences.', risk: 'low' },
-      { name: 'managePreferences', label: 'Is the Manage Preferences button enabled?', text: 'Enable this button to improve transparency and give users access to detailed consent options.', risk: 'medium' },
+      // Frameworks
+      { section: 'Frameworks', name: 'usOptOut', label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?', text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules.', risk: 'high' },
+      { section: 'Frameworks', name: 'gpc', label: 'Is GPC (Global Privacy Control) enabled?', text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA.', risk: 'high' },
+      { section: 'Frameworks', name: 'dnt', label: 'Is DNT (Do Not Track) enabled?', text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences.', risk: 'low' },
+      { section: 'Frameworks', name: 'managePreferences', label: 'Is the Manage Preferences button enabled?', text: 'Enable this button to improve transparency and give users access to detailed consent options.', risk: 'medium' },
 
-      // DSAR & Footer
-      { name: 'dsarForm', label: 'Is a DSAR form present and accessible?', text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations.', risk: 'high' },
-      { name: 'dsarLink', label: 'Is the DSAR form linked in the privacy policy?', text: 'Include a hyperlink to the DSAR form in your privacy policy to ensure users can locate it easily.', risk: 'medium' },
-      { name: 'dsarRights', label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?', text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability.', risk: 'high' },
-      { name: 'dnsLink', label: 'Is there a "Do Not Sell" link in the footer?', text: 'Add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements.', risk: 'high' },
-      { name: 'cookieLink', label: 'Is there a cookie preferences link or widget?', text: 'Ensure users can return to adjust preferences at any time by displaying a persistent link or floating widget.', risk: 'high' }
+      // DSAR & Other
+      { section: 'DSAR & Other', name: 'dsarForm', label: 'Is a DSAR form present and accessible?', text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations.', risk: 'high' },
+      { section: 'DSAR & Other', name: 'dsarLink', label: 'Is the DSAR form linked in the privacy policy?', text: 'Include a hyperlink to the DSAR form in your privacy policy to ensure users can locate it easily.', risk: 'medium' },
+      { section: 'DSAR & Other', name: 'dsarRights', label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?', text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability.', risk: 'high' },
+      { section: 'DSAR & Other', name: 'dnsLink', label: 'Is there a "Do Not Sell" link in the footer?', text: 'Add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements.', risk: 'high' },
+      { section: 'DSAR & Other', name: 'cookieLink', label: 'Is there a cookie preferences link or widget?', text: 'Ensure users can return to adjust preferences at any time by displaying a persistent link or floating widget.', risk: 'high' }
     ];
 
     const form = document.getElementById('reviewForm');
-    checks.forEach(({name, label, risk}) => {
+    let currentSection = '';
+    checks.forEach(({section, name, label, risk}) => {
+      if (section !== currentSection) {
+        const header = document.createElement('h2');
+        header.className = 'section-header';
+        header.textContent = section;
+        form.appendChild(header);
+        currentSection = section;
+      }
       const riskClass = risk === 'high' ? 'high-risk' : risk === 'medium' ? 'medium-risk' : 'low-risk';
       const div = document.createElement('div');
       div.className = `question ${riskClass}`;
