@@ -162,34 +162,52 @@
     button.onclick = generateReport;
     form.appendChild(button);
     function generateReport() {
-      const report = document.getElementById('report');
-      const downloadBtn = document.getElementById('downloadBtn');
-      let html = '<h2>Implementation Review Report</h2>';
-      html += '<p>Below is a summary of identified issues along with risk levels, recommendations, and implementation notes.</p><ul>';
+  const report = document.getElementById('report');
+  const downloadBtn = document.getElementById('downloadBtn');
+  let html = '<h2>Implementation Review Report</h2>';
+  html += '<p>Below is a summary of identified issues along with risk levels, recommendations, and implementation notes.</p>';
 
-      let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
+  const grouped = {};
+  checks.forEach(c => {
+    if (!grouped[c.section]) grouped[c.section] = [];
+    grouped[c.section].push(c);
+  });
 
-      checks.forEach(({name, label, text, risk}) => {
-        const value = form[name]?.value;
-        const notes = form[`note-${name}`]?.value.trim();
-        const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
+  let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
 
-        qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
+  html += '<ul>';
+  for (const section in grouped) {
+    const sectionItems = grouped[section];
+    let sectionBlock = '';
+    let sectionHasIssue = false;
 
-        if (value === 'no') {
-          const riskLabel = risk === 'high' ? 'risk-high' : risk === 'medium' ? 'risk-medium' : 'risk-low';
-          html += `<li><span class="${riskLabel}">${risk.toUpperCase()}:</span> <strong>${label}</strong><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li>`;
-        }
-      });
+    sectionItems.forEach(({name, label, text, risk}) => {
+      const value = form[name]?.value;
+      const notes = form[`note-${name}`]?.value.trim();
+      const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
 
-      qa += '</ul></div>';
-      html += '</ul>' + qa;
+      qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
 
-      report.innerHTML = html;
-      report.style.display = 'block';
-      downloadBtn.style.display = 'inline-block';
-    }
+      if (value === 'no') {
+        sectionHasIssue = true;
+        const riskLabel = risk === 'high' ? 'risk-high' : risk === 'medium' ? 'risk-medium' : 'risk-low';
+        sectionBlock += `<li><span class="${riskLabel}">${risk.toUpperCase()}:</span> <strong>${label}</strong><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li>`;
+      }
+    });
 
+    html += `<li><strong>${section}</strong><ul>`;
+    html += sectionHasIssue ? sectionBlock : `<li><span class="risk-low">✅ ${section} is strong – no additional recommendations at this time.</span></li>`;
+    html += '</ul></li>';
+  }
+  html += '</ul>';
+
+  qa += '</ul></div>';
+  html += qa;
+
+  report.innerHTML = html;
+  report.style.display = 'block';
+  downloadBtn.style.display = 'inline-block';
+}
     document.getElementById('downloadBtn').addEventListener('click', () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
