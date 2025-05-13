@@ -86,18 +86,35 @@
   <h1>Osano Implementation Self-Review</h1>
   <p>Select answers for each implementation best practice question below. Add notes where relevant. At the end, you'll receive a customized report with prioritized recommendations you can export to PDF.</p>
 
-  <form id="reviewForm">
-    <!-- Form dynamically inserted elsewhere -->
-  </form>
-
+  <form id="reviewForm"></form>
   <div id="report" class="report" style="display:none;"></div>
   <button id="downloadBtn" style="display:none; margin-top:10px;">Download as PDF</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     const checks = [
-      {name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script is placed in the correct category (Essential, Marketing, etc.) to enforce meaningful consent.', risk: 'high'},
-      // ... other questions follow this same structure ...
+      // CMP Installation
+      { name: 'headScript', label: 'Is osano.js placed in the <head> without async/defer?', text: 'Move osano.js to the <head> and remove async/defer to ensure it loads immediately and blocks pre-consent trackers.', risk: 'high' },
+      { name: 'preScripts', label: 'Are any non-essential scripts running before Osano?', text: 'Ensure scripts are delayed until Osano loads and consent is given to comply with privacy laws.', risk: 'high' },
+      { name: 'republish', label: 'Has the CMP been republished in the last 1–3 months?', text: 'Republish CMP to ensure any recent script or ruleset changes are captured in production.', risk: 'low' },
+
+      // Classification & Rule Quality
+      { name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.', risk: 'high' },
+      { name: 'groupedCategories', label: 'Are classifications grouped into useful categories?', text: 'Organize scripts/cookies into actionable groups to improve both usability and audit accuracy.', risk: 'medium' },
+      { name: 'misclassified', label: 'Are there any mass misclassifications (e.g., all hidden/essential)?', text: 'Avoid mislabeling all items the same category. Misclassification can lead to non-compliance.', risk: 'high' },
+
+      // Regulatory Settings
+      { name: 'usOptOut', label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?', text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules.', risk: 'high' },
+      { name: 'gpc', label: 'Is GPC (Global Privacy Control) enabled?', text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA.', risk: 'high' },
+      { name: 'dnt', label: 'Is DNT (Do Not Track) enabled?', text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences.', risk: 'low' },
+      { name: 'managePreferences', label: 'Is the Manage Preferences button enabled?', text: 'Enable this button to improve transparency and give users access to detailed consent options.', risk: 'medium' },
+
+      // DSAR & Footer
+      { name: 'dsarForm', label: 'Is a DSAR form present and accessible?', text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations.', risk: 'high' },
+      { name: 'dsarLink', label: 'Is the DSAR form linked in the privacy policy?', text: 'Include a hyperlink to the DSAR form in your privacy policy to ensure users can locate it easily.', risk: 'medium' },
+      { name: 'dsarRights', label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?', text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability.', risk: 'high' },
+      { name: 'dnsLink', label: 'Is there a "Do Not Sell" link in the footer?', text: 'Add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements.', risk: 'high' },
+      { name: 'cookieLink', label: 'Is there a cookie preferences link or widget?', text: 'Ensure users can return to adjust preferences at any time by displaying a persistent link or floating widget.', risk: 'high' }
     ];
 
     const form = document.getElementById('reviewForm');
