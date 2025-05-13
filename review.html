@@ -217,38 +217,30 @@ document.getElementById('downloadBtn').addEventListener('click', () => {
     scrollY: -window.scrollY,
     useCORS: true
   }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'pt', 'a4');
 
+    const imgData = canvas.toDataURL('image/png');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pageWidth - 40;
+    const imgWidth = pageWidth - 40; // left/right margin
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let position = 20;
-    let remainingHeight = imgHeight;
-    let pageCanvasHeight = (canvas.width / imgWidth) * pageHeight;
-    const img = new Image();
-    img.src = imgData;
+    let position = 20; // top margin
+    let heightLeft = imgHeight;
 
-    img.onload = () => {
-      const totalPages = Math.ceil(imgHeight / pageHeight);
-      for (let i = 0; i < totalPages; i++) {
-        if (i > 0) pdf.addPage();
-        const sourceY = (canvas.height / totalPages) * i;
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = canvas.height / totalPages;
-        const ctx = pageCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, sourceY, canvas.width, canvas.height / totalPages, 0, 0, canvas.width, canvas.height / totalPages);
-        const pageImgData = pageCanvas.toDataURL('image/png');
-        const pageImgHeight = (canvas.height / totalPages) * (imgWidth / canvas.width);
-        pdf.addImage(pageImgData, 'PNG', 20, 20, imgWidth, pageImgHeight);
-        if (i < totalPages - 1) pdf.addPage();
-      }
-      pdf.save('osano-implementation-review.pdf');
-    };
+    // First page
+    pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight - 40;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight + 20;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight - 40;
+    }
+
+    pdf.save('osano-implementation-review.pdf');
   });
 });
   </script>
