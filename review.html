@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Osano Implementation Review</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;700&family=Lato:wght@400;700&display=swap');
 
@@ -69,6 +69,7 @@
       margin-top: 40px;
       border-radius: 10px;
       box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      line-height: 1.7;
     }
 
     .report ul { padding-left: 20px; }
@@ -82,10 +83,17 @@
       border-radius: 6px;
       background: #F8F8FA;
       border-left: 4px solid #7A3FF1;
+      line-height: 1.6;
     }
 
     .qa-summary h3 {
       margin-top: 0;
+    }
+
+    .note-block {
+      margin-top: 6px;
+      font-style: italic;
+      color: #555;
     }
   </style>
 </head>
@@ -101,13 +109,13 @@
   <script>
     const checks = [
       // Installation
-      { section: 'Installation', name: 'inHead', label: 'Is osano.js placed in the head?', text: 'To properly block non-essential scripts before consent, osano.js must be placed inside the head tag.', risk: 'high' },
+      { section: 'Installation', name: 'inHead', label: 'Is osano.js placed in the <head>?', text: 'To properly block non-essential scripts before consent, osano.js must be placed inside the <head> tag.', risk: 'high' },
       { section: 'Installation', name: 'noAsyncDefer', label: 'Is osano.js loaded without async/defer?', text: 'Ensure the script is not marked async or defer so that it executes immediately, ensuring consent enforcement.', risk: 'high' },
-      { section: 'Installation', name: 'strictMode', label: 'Is your Osano configuration in "Strict" mode?', text: 'Strict mode enforces blocking of all non-essential cookies until explicit user consent. This is the most privacy-conscious configuration.', risk: 'high' },
+      { section: 'Installation', name: 'strictMode', label: 'Is your Osano configuration in "Strict" mode?', text: 'Strict mode blocks all non-essential cookies by default, which is critical for opt-in regimes like GDPR and CPRA.', risk: 'high' },
 
       // Classification
       { section: 'Classification', name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.', risk: 'high' },
-      { section: 'Classification', name: 'groupedCategories', label: 'Are classifications grouped into useful categories?', text: 'Organize scripts/cookies into actionable groups to improve both usability and audit accuracy.', risk: 'medium' },
+      { section: 'Classification', name: 'groupedCategories', label: 'Are classifications grouped into useful categories?', text: 'Organize scripts/cookies into meaningful categories to improve both usability and audit accuracy.', risk: 'medium' },
       { section: 'Classification', name: 'misclassified', label: 'Are there any mass misclassifications (e.g., all hidden/essential)?', text: 'Avoid mislabeling all items the same category. Misclassification can lead to non-compliance.', risk: 'high' },
       { section: 'Classification', name: 'cookieDisclosure', label: 'Are all, some, or none of your cookies disclosed?', text: 'Full cookie disclosure is recommended for transparency. Disclosing some is acceptable, while disclosing none is risky.', risk: 'medium' },
 
@@ -143,7 +151,7 @@
         <label><input type="radio" name="${name}" value="yes"> Yes</label>
         <label><input type="radio" name="${name}" value="no"> No</label>
         <label for="note-${name}"><em>Optional Notes:</em></label>
-        <textarea name="note-${name}" rows="2" placeholder="Add specific details like '_ga is classified as essential, should be analytics'."></textarea>
+        <textarea name="note-${name}" rows="2" placeholder="Add specifics like '_ga is classified as essential, should be analytics'."></textarea>
       `;
       form.appendChild(div);
     });
@@ -153,23 +161,24 @@
     button.textContent = 'Generate Report';
     button.onclick = generateReport;
     form.appendChild(button);
-
     function generateReport() {
       const report = document.getElementById('report');
       const downloadBtn = document.getElementById('downloadBtn');
       let html = '<h2>Implementation Review Report</h2>';
-      html += '<p>Below is a summary of identified issues along with risk levels and tailored recommendations for remediation.</p><ul>';
+      html += '<p>Below is a summary of identified issues along with risk levels, recommendations, and implementation notes.</p><ul>';
+
       let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
 
       checks.forEach(({name, label, text, risk}) => {
         const value = form[name]?.value;
         const notes = form[`note-${name}`]?.value.trim();
         const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
-        qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<br/><strong>Notes:</strong> ${notes}` : ''}</li>`;
+
+        qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
 
         if (value === 'no') {
           const riskLabel = risk === 'high' ? 'risk-high' : risk === 'medium' ? 'risk-medium' : 'risk-low';
-          html += `<li><span class="${riskLabel}">${risk.toUpperCase()}:</span> <strong>${label}</strong><br/>${text}${notes ? `<br/><em>Additional Notes:</em> ${notes}` : ''}</li>`;
+          html += `<li><span class="${riskLabel}">${risk.toUpperCase()}:</span> <strong>${label}</strong><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li>`;
         }
       });
 
@@ -186,7 +195,7 @@
       const doc = new jsPDF({ unit: 'pt', format: 'a4' });
       doc.html(document.getElementById('report'), {
         callback: function (pdf) {
-          pdf.save('osano-review-report.pdf');
+          pdf.save('osano-implementation-review.pdf');
         },
         x: 20,
         y: 20
