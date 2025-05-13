@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Osano Implementation Review</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Lato', sans-serif;
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      background: #F0E7FA;
+      color: #0E0416;
+    }
+
+    h1, h2 {
+      font-family: 'Jost', sans-serif;
+      color: #7A3FF1;
+    }
+
+    .question {
+      margin: 20px 0;
+      padding: 15px;
+      border-left: 6px solid #ccc;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .high-risk {
+      border-color: #F04438;
+      background: #FFE5E5;
+    }
+
+    .medium-risk {
+      border-color: #F79009;
+      background: #FFF5E5;
+    }
+
+    .low-risk {
+      border-color: #12B76A;
+      background: #E5FFE5;
+    }
+
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #7A3FF1;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .report {
+      background: #fff;
+      border-left: 4px solid #7A3FF1;
+      padding: 20px;
+      margin-top: 40px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Osano Implementation Self-Review</h1>
+  <form id="reviewForm">
+    <div class="question high-risk">
+      <strong>Is osano.js placed in the &lt;head&gt; without async/defer?</strong>
+      <label><input type="radio" name="headScript" value="yes"> Yes</label>
+      <label><input type="radio" name="headScript" value="no"> No</label>
+    </div>
+    <div class="question high-risk">
+      <strong>Are all scripts and cookies properly classified?</strong>
+      <label><input type="radio" name="classified" value="yes"> Yes</label>
+      <label><input type="radio" name="classified" value="no"> No</label>
+    </div>
+    <div class="question medium-risk">
+      <strong>Are classifications grouped into useful categories (e.g. Analytics, Marketing)?</strong>
+      <label><input type="radio" name="groupedCategories" value="yes"> Yes</label>
+      <label><input type="radio" name="groupedCategories" value="no"> No</label>
+    </div>
+    <div class="question high-risk">
+      <strong>Is GPC (Global Privacy Control) enabled?</strong>
+      <label><input type="radio" name="gpc" value="yes"> Yes</label>
+      <label><input type="radio" name="gpc" value="no"> No</label>
+    </div>
+    <div class="question medium-risk">
+      <strong>Is the Manage Preferences button enabled?</strong>
+      <label><input type="radio" name="managePreferences" value="yes"> Yes</label>
+      <label><input type="radio" name="managePreferences" value="no"> No</label>
+    </div>
+    <div class="question high-risk">
+      <strong>Is a DSAR form present and accessible?</strong>
+      <label><input type="radio" name="dsarForm" value="yes"> Yes</label>
+      <label><input type="radio" name="dsarForm" value="no"> No</label>
+    </div>
+    <div class="question low-risk">
+      <strong>Has the CMP been republished in the last 1–3 months?</strong>
+      <label><input type="radio" name="republish" value="yes"> Yes</label>
+      <label><input type="radio" name="republish" value="no"> No</label>
+    </div>
+    <button type="button" onclick="generateReport()">Generate Report</button>
+  </form>
+  <div id="report" class="report" style="display:none;"></div>
+
+  <script>
+    function generateReport() {
+      const report = document.getElementById('report');
+      const form = document.forms.reviewForm;
+      let html = '<h2>Implementation Review Report</h2><ul>';
+
+      if (form.headScript.value === "no") {
+        html += '<li><strong style="color:#F04438;">HIGH:</strong> Move <code>osano.js</code> to the &lt;head&gt; and remove async/defer for proper blocking.</li>';
+      }
+      if (form.classified.value === "no") {
+        html += '<li><strong style="color:#F04438;">HIGH:</strong> Review and classify all scripts and cookies correctly in the CMP dashboard.</li>';
+      }
+      if (form.groupedCategories.value === "no") {
+        html += '<li><strong style="color:#F79009;">MEDIUM:</strong> Improve usability by organizing cookies/scripts into clear categories like Analytics, Marketing, etc.</li>';
+      }
+      if (form.gpc.value === "no") {
+        html += '<li><strong style="color:#F04438;">HIGH:</strong> Enable GPC (Global Privacy Control) to comply with CPRA requirements.</li>';
+      }
+      if (form.managePreferences.value === "no") {
+        html += '<li><strong style="color:#F79009;">MEDIUM:</strong> Enable the Manage Preferences button to promote transparency and give users full control.</li>';
+      }
+      if (form.dsarForm.value === "no") {
+        html += '<li><strong style="color:#F04438;">HIGH:</strong> Add a visible, accessible DSAR form that includes access, deletion, correction, and objection options.</li>';
+      }
+      if (form.republish.value === "no") {
+        html += '<li><strong style="color:#12B76A;">LOW:</strong> Republish CMP settings at least every 3 months to capture updates and ensure best practices are in effect.</li>';
+      }
+
+      html += '</ul>';
+      report.innerHTML = html;
+      report.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
