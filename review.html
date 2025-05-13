@@ -101,7 +101,7 @@
   <script>
     const checks = [
       // Installation
-      { section: 'Installation', name: 'inHead', label: 'Is osano.js placed in the <head>?', text: 'To properly block non-essential scripts before consent, osano.js must be placed inside the <head> tag.', risk: 'high' },
+      { section: 'Installation', name: 'inHead', label: 'Is osano.js placed in the "<head>"?', text: 'To properly block non-essential scripts before consent, osano.js must be placed inside the <head> tag.', risk: 'high' },
       { section: 'Installation', name: 'noAsyncDefer', label: 'Is osano.js loaded without async/defer?', text: 'Ensure the script is not marked async or defer so that it executes immediately, ensuring consent enforcement.', risk: 'high' },
       { section: 'Installation', name: 'strictMode', label: 'Is your Osano configuration in "Strict" mode?', text: 'Strict mode enforces blocking of all non-essential cookies until explicit user consent. This is the most privacy-conscious configuration.', risk: 'high' },
 
