@@ -342,9 +342,10 @@ items.forEach((item) => {
   out += `<li>
     <span class="${color}">${item.label}</span><br/>
     ${item.text}
-    ${item.docLink ? `<div class="note-block"><a href="${item.docLink}" target="_blank">View documentation ↗</a></div>` : ''}
+    ${item.docLink ? `<div class="note-block">Documentation: ${item.docLink}</div>` : ''}
     ${item.notes ? `<div class="note-block"><em>Note:</em> ${item.notes}</div>` : ''}
   </li><br/>`;
+});
 });
     out += '</ul>';
     return out;
