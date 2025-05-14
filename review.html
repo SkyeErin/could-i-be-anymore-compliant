@@ -321,7 +321,12 @@
     if (!items.length) return '';
     let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
     items.forEach(({ label, text, notes }) => {
-      out += `<li><span class="${color}">${label}</span><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li><br/>`;
+      out += `<li>
+  <span class="${color}">${label}</span><br/>
+  ${text}
+  ${item.docLink ? `<div class="note-block"><a href="${item.docLink}" target="_blank">View documentation ↗</a></div>` : ''}
+  ${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}
+</li><br/>`;
     });
     out += '</ul>';
     return out;
@@ -394,6 +399,13 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
   pdf.save('osano-implementation-review.pdf');
 });
 </script>
+  <style>
+    .note-block a {
+  color: #7A3FF1;
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+  </style>
 
 </body>
 </html>
