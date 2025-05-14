@@ -335,16 +335,20 @@ function generateReport() {
   let html = '<h2>Implementation Review Report</h2>';
   html += '<p>This report summarizes your implementation health by risk priority. Recommendations are grouped accordingly and include any Implementation Manager notes.</p>';
 
-  const renderRiskSection = (title, icon, color, items) => {
-    if (!items.length) return '';
-    let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
-items.forEach((item) => {
-  out += `<li>
-    <span class="${color}">${item.label}</span><br/>
-    ${item.text}
-    ${item.docLink ? `<div class="note-block">Documentation: ${item.docLink}</div>` : ''}
-    ${item.notes ? `<div class="note-block"><em>Note:</em> ${item.notes}</div>` : ''}
-  </li><br/>`;
+const renderRiskSection = (title, icon, color, items) => {
+  if (!items.length) return '';
+  let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
+  items.forEach((item) => {
+    out += `<li>
+      <span class="${color}">${item.label}</span><br/>
+      ${item.text}
+      ${item.docLink ? `<div class="note-block">Documentation: ${item.docLink}</div>` : ''}
+      ${item.notes ? `<div class="note-block"><em>Note:</em> ${item.notes}</div>` : ''}
+    </li><br/>`;
+  });
+  out += '</ul>';
+  return out;
+};
 });
 });
     out += '</ul>';
