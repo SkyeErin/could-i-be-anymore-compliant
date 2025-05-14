@@ -210,39 +210,33 @@
   report.style.display = 'block';
   downloadBtn.style.display = 'inline-block';
 }
-document.getElementById('downloadBtn').addEventListener('click', () => {
-  const reportEl = document.getElementById('report');
-  html2canvas(reportEl, {
-    scale: 2,
-    scrollY: -window.scrollY,
-    useCORS: true
-  }).then(canvas => {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'pt', 'a4');
+  </script>
+  <script>
+document.getElementById('downloadBtn').addEventListener('click', async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'pt', 'a4');
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const elements = Array.from(document.querySelectorAll('#report > *'));
+  let yOffset = 20;
 
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
     const imgData = canvas.toDataURL('image/png');
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pageWidth - 40; // left/right margin
+    const imgWidth = pdf.internal.pageSize.getWidth() - 40;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let position = 20; // top margin
-    let heightLeft = imgHeight;
-
-    // First page
-    pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight - 40;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight + 20;
+    if (yOffset + imgHeight > pageHeight - 20) {
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 20, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight - 40;
+      yOffset = 20;
     }
 
-    pdf.save('osano-implementation-review.pdf');
-  });
+    pdf.addImage(imgData, 'PNG', 20, yOffset, imgWidth, imgHeight);
+    yOffset += imgHeight + 10;
+  }
+
+  pdf.save('osano-implementation-review.pdf');
 });
-  </script>
+</script>
 </body>
 </html>
