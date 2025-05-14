@@ -95,164 +95,29 @@
       font-style: italic;
       color: #555;
     }
+
+    .note-block a {
+      color: #7A3FF1;
+      text-decoration: underline;
+      font-size: 0.9em;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <h1>Osano Implementation Self-Review: Skye</h1>
+  <h1>Osano Implementation Self-Review</h1>
   <p>Select answers for each implementation best practice question below. Add notes where relevant. At the end, you'll receive a customized report with prioritized recommendations you can export to PDF.</p>
 
   <form id="reviewForm"></form>
   <div id="report" class="report" style="display:none;"></div>
   <button id="downloadBtn" style="display:none; margin-top:10px;">Download as PDF</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
- const checks = [
-  // Cookie Consent Installation
-  {
-    section: 'Cookie Consent Installation',
-    name: 'inHead',
-    label: 'Is osano.js placed in the "head"?',
-    text: 'Ensure osano.js is placed inside the <head> tag to properly block non-essential scripts before consent is given. Refer to the installation guide for detailed steps.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472104822548-Installing-Osano-on-Wordpress'
-  },
-  {
-    section: 'Cookie Consent Installation',
-    name: 'noAsyncDefer',
-    label: 'Is osano.js loaded without async/defer?',
-    text: 'The osano.js script should not have async or defer attributes to ensure it executes immediately, enforcing consent before other scripts run. Learn more about script loading best practices.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/29520667499540-Verify-and-Troubleshoot-your-Google-Consent-Mode-Installation'
-  },
-  {
-    section: 'Cookie Consent Installation',
-    name: 'strictMode',
-    label: 'Is your Osano configuration in "Strict" mode?',
-    text: 'Strict mode blocks all non-essential cookies by default, which is critical for opt-in regimes like GDPR and CPRA. Change this mode in your settings and republish your configuration to ensure that you are operating in strict mode.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472145619988-Compliance-Modes-Listener-Permissive-Strict'
-  },
-
-  // Cookie Consent Styling and Classification
-  {
-    section: 'Cookie Consent Styling and Classification',
-    name: 'classified',
-    label: 'Are all scripts and cookies properly classified?',
-    text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472106973204-Classification-of-Scripts-and-Cookies'
-  },
-  {
-    section: 'Cookie Consent Styling and Classification',
-    name: 'groupedCategories',
-    label: 'Are classifications grouped into useful rulesets?',
-    text: 'Organize scripts/cookies into meaningful rulesets to improve both usability and audit accuracy as well as to increase performance.',
-    risk: 'medium',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472145627540-Classification-Rules'
-  },
-  {
-    section: 'Cookie Consent Styling and Classification',
-    name: 'misclassified',
-    label: 'Are the rules free of any glaring misclassifications (e.g., all hidden/essential)?',
-    text: 'Avoid mislabeling items to ensure compliance especially when it comes to non-essential trackers. Misclassification can lead to non-compliance as only trackers essential to site functionality should be set prior to consent.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433444628-Classification-Categories'
-  },
-  {
-    section: 'Cookie Consent Styling and Classification',
-    name: 'darkPatterns',
-    label: 'Is the cookie consent banner free of any styling that could be considered a "dark pattern"?',
-    text: 'Check associated notes: There are many styling customizations that may institute a dark pattern. Check your styling and customizations to ensure you are not falling under one of these patterns. There are included but not limited to 1.hiding buttons 2.coloration that encourages accept vs deny actions ex. red deny, green accept. Shrinking reject option text. Etc.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396820116-Common-CSS-Changes'
-  },
-  {
-    section: 'Cookie Consent Styling and Classification',
-    name: 'cookieDisclosure',
-    label: 'Are all your cookies disclosed?',
-    text: 'Full cookie disclosure is recommended for transparency. Disclosing some is acceptable, while disclosing none is risky. Go to your Managed cookies in the Osano Admin Portal and check the disclose checkbox. Republish your configuration to see disclosures.',
-    risk: 'medium',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433819284-Cookie-Disclosures-Cookie-Notices'
-  },
-
-  // Cookie Consent Frameworks
-  {
-    section: 'Cookie Consent Frameworks',
-    name: 'usOptOut',
-    label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?',
-    text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules. We recommend this for any organizations concerned about CPRA, CIPA, or VPPA. It is also the most risk averse option. Turn this off in your consent settings.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433588756-US-State-Level-Legislation-Opt-Out-Banner-Format-Setting'
-  },
-  {
-    section: 'Cookie Consent Frameworks',
-    name: 'gpc',
-    label: 'Is GPC (Global Privacy Control) enabled?',
-    text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA. Enable this in your cookie consent settings, then republish your configuration to enable.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472143438100-Global-Privacy-Control-GPC'
-  },
-  {
-    section: 'Cookie Consent Frameworks',
-    name: 'dnt',
-    label: 'Is DNT (Do Not Track) enabled?',
-    text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences. Enable this in your cookie consent settings, then republish your configuration to enable.',
-    risk: 'low',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/23907964273556-Do-Not-Track-DNT'
-  },
-  {
-    section: 'Cookie Consent Frameworks',
-    name: 'managePreferences',
-    label: 'Is the Manage Preferences button enabled?',
-    text: 'Enable this button to improve transparency and give users access to detailed consent options. This is not a requirement, but a best practice. Enable this in your cookie consent settings, then republish your configuration to enable.',
-    risk: 'low',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396580884-First-Layer-Categories-Manage-Preferences'
-  },
-
-  // DSAR & Other
-  {
-    section: 'DSAR & Other',
-    name: 'dsarForm',
-    label: 'Is a DSAR form present and accessible?',
-    text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations. If one does not exist at all, be sure to put a process in place ASAP.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22472143448340-DSAR-Getting-Started'
-  },
-  {
-    section: 'DSAR & Other',
-    name: 'dsarLink',
-    label: 'Is the DSAR form linked in the privacy policy?',
-    text: 'Include a hyperlink or an embed of your DSAR form or process in your privacy policy to ensure users can locate it easily. It MAY exist in a different location, but should be referenced in your privacy policy to avoid risk.',
-    risk: 'medium',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/34300102859284-DSAR-Link-in-CMP-Drawer-Setup-Guide'
-  },
-  {
-    section: 'DSAR & Other',
-    name: 'dsarRights',
-    label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?',
-    text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability. These should be called out specifically and serviced based on requirment for best practice.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22471428469524-Subject-rights-DSAR-overview'
-  },
-  {
-    section: 'DSAR & Other',
-    name: 'dnsLink',
-    label: 'Is there a "Do Not Sell" link in the footer?',
-    text: 'Osano automatically supports do not sell in the Cookie Consent preferences drawer, however this can appear as "hidden". For greater visibility, add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements. Add the standalone Do Not Sell modal to support this requirement',
-    risk: 'low',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22471437259028-How-to-set-up-the-do-not-sell-modal'
-  },
-  {
-    section: 'DSAR & Other',
-    name: 'cookieLink',
-    label: 'Is there a cookie preferences link or widget?',
-    text: 'If you are hiding the cookie icon that exists out of the box for Osano cookie consent, ensure you provide users with another way to adjust preferences at any time by displaying a persistent link in the footer.',
-    risk: 'high',
-    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396579220-Hiding-the-Cookie-Widget-Cookie-Icon'
-  }
-];
+    const checks = [
+      { section: 'Cookie Consent Installation', name: 'inHead', label: 'Is osano.js placed in the "head"?', text: 'Ensure osano.js is placed inside the <head> tag to properly block non-essential scripts before consent is given.', risk: 'high', docLink: 'https://docs.osano.com/' },
+      { section: 'Cookie Consent Styling and Classification', name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately to maintain valid consent enforcement.', risk: 'high', docLink: 'https://docs.osano.com/' }
+    ];
 
     const form = document.getElementById('reviewForm');
     let currentSection = '';
@@ -266,14 +131,14 @@
       }
       const riskClass = risk === 'high' ? 'high-risk' : risk === 'medium' ? 'medium-risk' : 'low-risk';
       const div = document.createElement('div');
-      div.className = question ${riskClass};
-      div.innerHTML = 
+      div.className = `question ${riskClass}`;
+      div.innerHTML = `
         <strong>${label}</strong>
         <label><input type="radio" name="${name}" value="yes"> Yes</label>
         <label><input type="radio" name="${name}" value="no"> No</label>
         <label for="note-${name}"><em>Optional Notes:</em></label>
         <textarea name="note-${name}" rows="2" placeholder="Add specifics like '_ga is classified as essential, should be analytics'."></textarea>
-      ;
+      `;
       form.appendChild(div);
     });
 
@@ -282,148 +147,78 @@
     button.textContent = 'Generate Report';
     button.onclick = generateReport;
     form.appendChild(button);
-function generateReport() {
-  const report = document.getElementById('report');
-  const downloadBtn = document.getElementById('downloadBtn');
 
-  // ✅ Required validation
-  const unanswered = checks.filter(({ name }) => {
-    const radios = document.getElementsByName(name);
-    return !Array.from(radios).some(r => r.checked);
-  });
+    function generateReport() {
+      const report = document.getElementById('report');
+      const downloadBtn = document.getElementById('downloadBtn');
 
-  if (unanswered.length > 0) {
-    alert('Please answer all questions before generating the report.');
-    unanswered.forEach(({ name }) => {
-      const questionBlock = document.querySelector([name="${name}"])?.closest('.question');
-      if (questionBlock) {
-        questionBlock.style.borderColor = '#F04438';
-        questionBlock.style.boxShadow = '0 0 10px rgba(240, 68, 56, 0.4)';
-      }
-    });
-    return;
-  }
-  const riskBuckets = {
-    high: [],
-    medium: [],
-    low: [],
-    pass: []
-  };
-
-  let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
-
-  checks.forEach(({name, label, text, risk, section}) => {
-    const value = form[name]?.value;
-    const notes = form[note-${name}]?.value.trim();
-    const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
-
-    qa += <li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? <div class="note-block"><strong>Notes:</strong> ${notes}</div> : ''}</li>;
-
-    if (value === 'no') {
-      riskBuckets[risk].push({
-        label,
-        text,
-        risk,
-        notes
+      const unanswered = checks.filter(({ name }) => {
+        const radios = document.getElementsByName(name);
+        return !Array.from(radios).some(r => r.checked);
       });
-    } else if (value === 'yes') {
-      riskBuckets.pass.push({ label, section });
+
+      if (unanswered.length > 0) {
+        alert('Please answer all questions before generating the report.');
+        unanswered.forEach(({ name }) => {
+          const questionBlock = document.querySelector(`[name="${name}"]`)?.closest('.question');
+          if (questionBlock) {
+            questionBlock.style.borderColor = '#F04438';
+            questionBlock.style.boxShadow = '0 0 10px rgba(240, 68, 56, 0.4)';
+          }
+        });
+        return;
+      }
+
+      const riskBuckets = { high: [], medium: [], low: [], pass: [] };
+      let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
+
+      checks.forEach(({name, label, text, risk, section, docLink}) => {
+        const value = form[name]?.value;
+        const notes = form[`note-${name}`]?.value.trim();
+        const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
+        qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
+        if (value === 'no') {
+          riskBuckets[risk].push({ label, text, risk, notes, docLink });
+        } else if (value === 'yes') {
+          riskBuckets.pass.push({ label, section });
+        }
+      });
+
+      let html = '<h2>Implementation Review Report</h2>';
+      html += '<p>This report summarizes your implementation health by risk priority. Recommendations are grouped accordingly and include any Implementation Manager notes.</p>';
+
+      const renderRiskSection = (title, icon, color, items) => {
+        if (!items.length) return '';
+        let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
+        items.forEach(item => {
+          out += `<li>
+            <span class="${color}">${item.label}</span><br/>
+            ${item.text}
+            ${item.docLink ? `<div class="note-block"><a href="${item.docLink}" target="_blank">View documentation ↗</a></div>` : ''}
+            ${item.notes ? `<div class="note-block"><em>Note:</em> ${item.notes}</div>` : ''}
+          </li><br/>`;
+        });
+        out += '</ul>';
+        return out;
+      };
+
+      html += renderRiskSection('HIGH-RISK Findings', '🟥', 'risk-high', riskBuckets.high);
+      html += renderRiskSection('MEDIUM-RISK Findings', '🟧', 'risk-medium', riskBuckets.medium);
+      html += renderRiskSection('LOW-RISK Findings', '🟩', 'risk-low', riskBuckets.low);
+
+      if (riskBuckets.pass.length) {
+        html += `<h3 style="margin-top:32px;">✅ No Issues Found</h3><ul>`;
+        riskBuckets.pass.forEach(({ label, section }) => {
+          html += `<li><strong>${label}</strong> — No additional action needed (${section})</li>`;
+        });
+        html += '</ul>';
+      }
+
+      html += qa + '</div>';
+      report.innerHTML = html;
+      report.style.display = 'block';
+      downloadBtn.style.display = 'inline-block';
     }
-  });
-
-  // Start the report
-  let html = '<h2>Implementation Review Report</h2>';
-  html += '<p>This report summarizes your implementation health by risk priority. Recommendations are grouped accordingly and include any Implementation Manager notes.</p>';
-
-  const renderRiskSection = (title, icon, color, items) => {
-    if (!items.length) return '';
-    let out = <h3 style="margin-top:32px;">${icon} ${title}</h3><ul>;
-items.forEach((item) => {
-  out += <li>
-    <span class="${color}">${item.label}</span><br/>
-    ${item.text}
-    ${item.docLink ? <div class="note-block"><a href="${item.docLink}" target="_blank">View documentation ↗</a></div> : ''}
-    ${item.notes ? <div class="note-block"><em>Note:</em> ${item.notes}</div> : ''}
-  </li><br/>;
-});
-    out += '</ul>';
-    return out;
-  };
-
-  html += renderRiskSection('HIGH-RISK Findings', '🟥', 'risk-high', riskBuckets.high);
-  html += renderRiskSection('MEDIUM-RISK Findings', '🟧', 'risk-medium', riskBuckets.medium);
-  html += renderRiskSection('LOW-RISK Findings', '🟩', 'risk-low', riskBuckets.low);
-
-  // Render no-issue confirmations
-  if (riskBuckets.pass.length) {
-    html += <h3 style="margin-top:32px;">✅ No Issues Found</h3><ul>;
-    riskBuckets.pass.forEach(({ label, section }) => {
-      html += <li><strong>${label}</strong> — No additional action needed (${section})</li>;
-    });
-    html += '</ul>';
-  }
-
-  html += qa + '</div>';
-  report.innerHTML = html;
-  report.style.display = 'block';
-  downloadBtn.style.display = 'inline-block';
-}
   </script>
- <script>
-document.getElementById('downloadBtn').addEventListener('click', async () => {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'pt', 'a4');
-
-  const margin = 40;
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const elements = Array.from(document.querySelectorAll('#report > *'));
-  const today = new Date().toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  let yOffset = margin;
-
-  for (let i = 0; i < elements.length; i++) {
-    const el = elements[i];
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
-    const imgData = canvas.toDataURL('image/png');
-
-    const imgWidth = pageWidth - margin * 2;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    // Add page if content doesn't fit
-    if (yOffset + imgHeight > pageHeight - margin - 40) {
-      pdf.addPage();
-      yOffset = margin;
-    }
-
-    pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
-    yOffset += imgHeight + 10;
-  }
-
-  // Add footer to every page
-  const pageCount = pdf.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    pdf.setPage(i);
-    pdf.setFontSize(10);
-    pdf.setTextColor('#666');
-    pdf.text(Report run on ${today}, margin, pageHeight - 20);
-    pdf.text('Powered by Osano', pageWidth - margin - 100, pageHeight - 20);
-  }
-
-  pdf.save('osano-implementation-review.pdf');
-});
-</script>
-  <style>
-    .note-block a {
-  color: #7A3FF1;
-  text-decoration: underline;
-  font-size: 0.9em;
-}
-  </style>
-
 </body>
 </html>
