@@ -166,46 +166,62 @@
     function generateReport() {
   const report = document.getElementById('report');
   const downloadBtn = document.getElementById('downloadBtn');
-  let html = '<h2>Implementation Review Report</h2>';
-  html += '<p>Below is a summary of identified issues along with risk levels, recommendations, and implementation notes.</p>';
-
-  const grouped = {};
-  checks.forEach(c => {
-    if (!grouped[c.section]) grouped[c.section] = [];
-    grouped[c.section].push(c);
-  });
+  const riskBuckets = {
+    high: [],
+    medium: [],
+    low: [],
+    pass: []
+  };
 
   let qa = '<div class="qa-summary"><h3>Full Question & Answer Summary</h3><ul>';
 
-  html += '<ul>';
-  for (const section in grouped) {
-    const sectionItems = grouped[section];
-    let sectionBlock = '';
-    let sectionHasIssue = false;
+  checks.forEach(({name, label, text, risk, section}) => {
+    const value = form[name]?.value;
+    const notes = form[`note-${name}`]?.value.trim();
+    const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
 
-    sectionItems.forEach(({name, label, text, risk}) => {
-      const value = form[name]?.value;
-      const notes = form[`note-${name}`]?.value.trim();
-      const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
+    qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
 
-      qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
+    if (value === 'no') {
+      riskBuckets[risk].push({
+        label,
+        text,
+        risk,
+        notes
+      });
+    } else if (value === 'yes') {
+      riskBuckets.pass.push({ label, section });
+    }
+  });
 
-      if (value === 'no') {
-        sectionHasIssue = true;
-        const riskLabel = risk === 'high' ? 'risk-high' : risk === 'medium' ? 'risk-medium' : 'risk-low';
-        sectionBlock += `<li><span class="${riskLabel}">${risk.toUpperCase()}:</span> <strong>${label}</strong><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li>`;
-      }
+  // Start the report
+  let html = '<h2>Implementation Review Report</h2>';
+  html += '<p>This report summarizes your implementation health by risk priority. Recommendations are grouped accordingly and include any Implementation Manager notes.</p>';
+
+  const renderRiskSection = (title, icon, color, items) => {
+    if (!items.length) return '';
+    let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
+    items.forEach(({ label, text, notes }) => {
+      out += `<li><span class="${color}">${label}</span><br/>${text}${notes ? `<div class="note-block"><em>Note:</em> ${notes}</div>` : ''}</li><br/>`;
     });
+    out += '</ul>';
+    return out;
+  };
 
-    html += `<li><strong>${section}</strong><ul>`;
-    html += sectionHasIssue ? sectionBlock : `<li><span class="risk-low">✅ ${section} is strong – no additional recommendations at this time.</span></li>`;
-    html += '</ul></li>';
+  html += renderRiskSection('HIGH-RISK Findings', '🟥', 'risk-high', riskBuckets.high);
+  html += renderRiskSection('MEDIUM-RISK Findings', '🟧', 'risk-medium', riskBuckets.medium);
+  html += renderRiskSection('LOW-RISK Findings', '🟩', 'risk-low', riskBuckets.low);
+
+  // Render no-issue confirmations
+  if (riskBuckets.pass.length) {
+    html += `<h3 style="margin-top:32px;">✅ No Issues Found</h3><ul>`;
+    riskBuckets.pass.forEach(({ label, section }) => {
+      html += `<li><strong>${label}</strong> — No additional action needed (${section})</li>`;
+    });
+    html += '</ul>';
   }
-  html += '</ul>';
 
-  qa += '</ul></div>';
-  html += qa;
-
+  html += qa + '</div>';
   report.innerHTML = html;
   report.style.display = 'block';
   downloadBtn.style.display = 'inline-block';
