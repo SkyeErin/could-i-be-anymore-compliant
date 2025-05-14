@@ -227,10 +227,7 @@
   downloadBtn.style.display = 'inline-block';
 }
   </script>
-  <script>
-const logo = new Image();
-logo.src = 'https://shop.osano.com/cdn-cgi/image/fit=scale-down,format=auto,width=300/api/store/assets/branding/75781b2b-0098-44de-875a-8a3dcbbf5274';
-
+ <script>
 document.getElementById('downloadBtn').addEventListener('click', async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p', 'pt', 'a4');
@@ -245,17 +242,7 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
     day: 'numeric'
   });
 
-  // Ensure image is loaded before using
-  await new Promise(resolve => {
-    if (logo.complete) {
-      resolve();
-    } else {
-      logo.onload = resolve;
-    }
-  });
-
-  let yOffset = margin + 50; // Leave space for logo
-  const firstPage = true;
+  let yOffset = margin;
 
   for (let i = 0; i < elements.length; i++) {
     const el = elements[i];
@@ -265,22 +252,17 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
     const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    // Check if this content fits, else add a new page
+    // Add page if content doesn't fit
     if (yOffset + imgHeight > pageHeight - margin - 40) {
       pdf.addPage();
       yOffset = margin;
-    }
-
-    // Only add logo on first page
-    if (pdf.internal.getCurrentPageInfo().pageNumber === 1 && i === 0) {
-      pdf.addImage(logo, 'PNG', margin, margin - 10, 100, 30);
     }
 
     pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
     yOffset += imgHeight + 10;
   }
 
-  // Footer on each page
+  // Add footer to every page
   const pageCount = pdf.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     pdf.setPage(i);
@@ -293,5 +275,6 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
   pdf.save('osano-implementation-review.pdf');
 });
 </script>
+
 </body>
 </html>
