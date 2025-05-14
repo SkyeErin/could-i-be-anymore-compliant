@@ -282,9 +282,27 @@
     button.textContent = 'Generate Report';
     button.onclick = generateReport;
     form.appendChild(button);
-    function generateReport() {
+function generateReport() {
   const report = document.getElementById('report');
   const downloadBtn = document.getElementById('downloadBtn');
+
+  // ✅ Required validation
+  const unanswered = checks.filter(({ name }) => {
+    const radios = document.getElementsByName(name);
+    return !Array.from(radios).some(r => r.checked);
+  });
+
+  if (unanswered.length > 0) {
+    alert('Please answer all questions before generating the report.');
+    unanswered.forEach(({ name }) => {
+      const questionBlock = document.querySelector(`[name="${name}"]`)?.closest('.question');
+      if (questionBlock) {
+        questionBlock.style.borderColor = '#F04438';
+        questionBlock.style.boxShadow = '0 0 10px rgba(240, 68, 56, 0.4)';
+      }
+    });
+    return;
+  }
   const riskBuckets = {
     high: [],
     medium: [],
