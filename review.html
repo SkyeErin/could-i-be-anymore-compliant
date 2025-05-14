@@ -228,6 +228,9 @@
 }
   </script>
   <script>
+const logo = new Image();
+logo.src = 'https://shop.osano.com/cdn-cgi/image/fit=scale-down,format=auto,width=300/api/store/assets/branding/75781b2b-0098-44de-875a-8a3dcbbf5274';
+
 document.getElementById('downloadBtn').addEventListener('click', async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p', 'pt', 'a4');
@@ -236,20 +239,23 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const elements = Array.from(document.querySelectorAll('#report > *'));
-
-  let yOffset = margin + 50; // Leave space for logo
-
-  const logo = new Image();
-  logo.src = 'https://shop.osano.com/cdn-cgi/image/fit=scale-down,format=auto,width=300/api/store/assets/branding/75781b2b-0098-44de-875a-8a3dcbbf5274';
-
-logo.onload = async () => {
   const today = new Date().toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
 
-  const totalPages = [];
+  // Ensure image is loaded before using
+  await new Promise(resolve => {
+    if (logo.complete) {
+      resolve();
+    } else {
+      logo.onload = resolve;
+    }
+  });
+
+  let yOffset = margin + 50; // Leave space for logo
+  const firstPage = true;
 
   for (let i = 0; i < elements.length; i++) {
     const el = elements[i];
@@ -259,16 +265,15 @@ logo.onload = async () => {
     const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    if (i === 0) {
-      // First page: add logo
-      pdf.addImage(logo, 'PNG', margin, margin - 10, 100, 30);
-      yOffset = margin + 50;
-    }
-
+    // Check if this content fits, else add a new page
     if (yOffset + imgHeight > pageHeight - margin - 40) {
-      totalPages.push(pdf.internal.getNumberOfPages());
       pdf.addPage();
       yOffset = margin;
+    }
+
+    // Only add logo on first page
+    if (pdf.internal.getCurrentPageInfo().pageNumber === 1 && i === 0) {
+      pdf.addImage(logo, 'PNG', margin, margin - 10, 100, 30);
     }
 
     pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
@@ -286,7 +291,6 @@ logo.onload = async () => {
   }
 
   pdf.save('osano-implementation-review.pdf');
-};
 });
 </script>
 </body>
