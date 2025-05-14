@@ -108,32 +108,151 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const checks = [
-      // Cookie Consent Installation
-      { section: 'Cookie Consent Installation', name: 'inHead', label: 'Is osano.js placed in the "head"?', text: 'Check your Osano.js installation. To properly block non-essential scripts before consent, osano.js must be placed inside the <head> tag.', risk: 'high' },
-      { section: 'Cookie Consent Installation', name: 'noAsyncDefer', label: 'Is osano.js loaded without async/defer?', text: 'Ensure the script is not marked async or defer so that it executes immediately, ensuring consent enforcement. If one of these has been added to the Osano script, remove it.', risk: 'high' },
-      { section: 'Cookie Consent Installation', name: 'strictMode', label: 'Is your Osano configuration in "Strict" mode?', text: 'Strict mode blocks all non-essential cookies by default, which is critical for opt-in regimes like GDPR and CPRA. Change this mode in your settings and republish your configuration to ensure that you are operating in strict mode.', risk: 'high' },
+ const checks = [
+  // Cookie Consent Installation
+  {
+    section: 'Cookie Consent Installation',
+    name: 'inHead',
+    label: 'Is osano.js placed in the "head"?',
+    text: 'Ensure osano.js is placed inside the <head> tag to properly block non-essential scripts before consent is given. Refer to the installation guide for detailed steps.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472104822548-Installing-Osano-on-Wordpress'
+  },
+  {
+    section: 'Cookie Consent Installation',
+    name: 'noAsyncDefer',
+    label: 'Is osano.js loaded without async/defer?',
+    text: 'The osano.js script should not have async or defer attributes to ensure it executes immediately, enforcing consent before other scripts run. Learn more about script loading best practices.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/29520667499540-Verify-and-Troubleshoot-your-Google-Consent-Mode-Installation'
+  },
+  {
+    section: 'Cookie Consent Installation',
+    name: 'strictMode',
+    label: 'Is your Osano configuration in "Strict" mode?',
+    text: 'Strict mode blocks all non-essential cookies by default, which is critical for opt-in regimes like GDPR and CPRA. Change this mode in your settings and republish your configuration to ensure that you are operating in strict mode.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472145619988-Compliance-Modes-Listener-Permissive-Strict'
+  },
 
-      //Cookie Consent Styling and Classification
-      { section: 'Cookie Consent Styling and Classification', name: 'classified', label: 'Are all scripts and cookies properly classified?', text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.', risk: 'high' },
-      { section: 'Cookie Consent Styling and Classification', name: 'groupedCategories', label: 'Are classifications grouped into useful rulesets?', text: 'Organize scripts/cookies into meaningful rulesets to improve both usability and audit accuracy as well as to increase performance.', risk: 'medium' },
-      { section: 'Cookie Consent Styling and Classification', name: 'misclassified', label: 'Are the rules free of any glaring misclassifications (e.g., all hidden/essential)?', text: 'Avoid mislabeling items to ensure compliance especially when it comes to non-essential trackers. Misclassification can lead to non-compliance as only trackers essential to site functionality should be set prior to consent.', risk: 'high' },
-      { section: 'Cookie Consent Styling and Classification', name: 'darkPatterns', label: 'Is the cookie consent banner free of any styling that could be considered a "dark pattern"?', text: 'Check associated notes: There are many styling customizations that may institute a dark pattern. Check your styling and customizations to ensure you are not falling under one of these patterns. There are included but not limited to 1.hiding buttons 2.coloration that encourages accept vs deny actions ex. red deny, green accept. Shrinking reject option text. Etc.', risk: 'high' },
-      { section: 'Cookie Consent Styling and Classification', name: 'cookieDisclosure', label: 'Are all your cookies disclosed?', text: 'Full cookie disclosure is recommended for transparency. Disclosing some is acceptable, while disclosing none is risky. Go to your Managed cookies in the Osano Admin Portal and check the disclose checkbox. Republish your configuration to see disclosures.', risk: 'medium' },
+  // Cookie Consent Styling and Classification
+  {
+    section: 'Cookie Consent Styling and Classification',
+    name: 'classified',
+    label: 'Are all scripts and cookies properly classified?',
+    text: 'Ensure every script and cookie is categorized appropriately (e.g., Essential, Marketing, Analytics) to maintain valid consent enforcement.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472106973204-Classification-of-Scripts-and-Cookies'
+  },
+  {
+    section: 'Cookie Consent Styling and Classification',
+    name: 'groupedCategories',
+    label: 'Are classifications grouped into useful rulesets?',
+    text: 'Organize scripts/cookies into meaningful rulesets to improve both usability and audit accuracy as well as to increase performance.',
+    risk: 'medium',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472145627540-Classification-Rules'
+  },
+  {
+    section: 'Cookie Consent Styling and Classification',
+    name: 'misclassified',
+    label: 'Are the rules free of any glaring misclassifications (e.g., all hidden/essential)?',
+    text: 'Avoid mislabeling items to ensure compliance especially when it comes to non-essential trackers. Misclassification can lead to non-compliance as only trackers essential to site functionality should be set prior to consent.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433444628-Classification-Categories'
+  },
+  {
+    section: 'Cookie Consent Styling and Classification',
+    name: 'darkPatterns',
+    label: 'Is the cookie consent banner free of any styling that could be considered a "dark pattern"?',
+    text: 'Check associated notes: There are many styling customizations that may institute a dark pattern. Check your styling and customizations to ensure you are not falling under one of these patterns. There are included but not limited to 1.hiding buttons 2.coloration that encourages accept vs deny actions ex. red deny, green accept. Shrinking reject option text. Etc.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396820116-Common-CSS-Changes'
+  },
+  {
+    section: 'Cookie Consent Styling and Classification',
+    name: 'cookieDisclosure',
+    label: 'Are all your cookies disclosed?',
+    text: 'Full cookie disclosure is recommended for transparency. Disclosing some is acceptable, while disclosing none is risky. Go to your Managed cookies in the Osano Admin Portal and check the disclose checkbox. Republish your configuration to see disclosures.',
+    risk: 'medium',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433819284-Cookie-Disclosures-Cookie-Notices'
+  },
 
-      // Cookie Consent Frameworks
-      { section: 'Cookie Consent Frameworks', name: 'usOptOut', label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?', text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules. We recommend this for any organizations concerned about CPRA, CIPA, or VPPA. It is also the most risk averse option. Turn this off in your consent settings.', risk: 'high' },
-      { section: 'Cookie Consent Frameworks', name: 'gpc', label: 'Is GPC (Global Privacy Control) enabled?', text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA. Enable this in your cookie consent settings, then republish your configuration to enable.', risk: 'high' },
-      { section: 'Cookie Consent Frameworks', name: 'dnt', label: 'Is DNT (Do Not Track) enabled?', text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences. Enable this in your cookie consent settings, then republish your configuration to enable.', risk: 'low' },
-      { section: 'Cookie Consent Frameworks', name: 'managePreferences', label: 'Is the Manage Preferences button enabled?', text: 'Enable this button to improve transparency and give users access to detailed consent options. This is not a requirement, but a best practice. Enable this in your cookie consent settings, then republish your configuration to enable.', risk: 'low' },
+  // Cookie Consent Frameworks
+  {
+    section: 'Cookie Consent Frameworks',
+    name: 'usOptOut',
+    label: 'Is US State Opt-Out turned OFF (for CPRA compliance)?',
+    text: 'US State Opt-Out must be OFF to allow opt-in consent per CPRA guidance. Review settings under region-specific rules. We recommend this for any organizations concerned about CPRA, CIPA, or VPPA. It is also the most risk averse option. Turn this off in your consent settings.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469433588756-US-State-Level-Legislation-Opt-Out-Banner-Format-Setting'
+  },
+  {
+    section: 'Cookie Consent Frameworks',
+    name: 'gpc',
+    label: 'Is GPC (Global Privacy Control) enabled?',
+    text: 'Enable GPC to detect Do Not Sell signals sent by browsers in compliance with CPRA. Enable this in your cookie consent settings, then republish your configuration to enable.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472143438100-Global-Privacy-Control-GPC'
+  },
+  {
+    section: 'Cookie Consent Frameworks',
+    name: 'dnt',
+    label: 'Is DNT (Do Not Track) enabled?',
+    text: 'While not legally required, enabling DNT shows a privacy-forward approach and honors legacy preferences. Enable this in your cookie consent settings, then republish your configuration to enable.',
+    risk: 'low',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/23907964273556-Do-Not-Track-DNT'
+  },
+  {
+    section: 'Cookie Consent Frameworks',
+    name: 'managePreferences',
+    label: 'Is the Manage Preferences button enabled?',
+    text: 'Enable this button to improve transparency and give users access to detailed consent options. This is not a requirement, but a best practice. Enable this in your cookie consent settings, then republish your configuration to enable.',
+    risk: 'low',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396580884-First-Layer-Categories-Manage-Preferences'
+  },
 
-      // DSAR & Other
-      { section: 'DSAR & Other', name: 'dsarForm', label: 'Is a DSAR form present and accessible?', text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations. If one does not exist at all, be sure to put a process in place ASAP.', risk: 'high' },
-      { section: 'DSAR & Other', name: 'dsarLink', label: 'Is the DSAR form linked in the privacy policy?', text: 'Include a hyperlink or an embed of your DSAR form or process in your privacy policy to ensure users can locate it easily. It MAY exist in a different location, but should be referenced in your privacy policy to avoid risk.', risk: 'medium' },
-      { section: 'DSAR & Other', name: 'dsarRights', label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?', text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability. These should be called out specifically and serviced based on requirment for best practice.', risk: 'high' },
-      { section: 'DSAR & Other', name: 'dnsLink', label: 'Is there a "Do Not Sell" link in the footer?', text: 'Osano automatically supports do not sell in the Cookie Consent preferences drawer, however this can appear as "hidden". For greater visibility, add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements. Add the standalone Do Not Sell modal to support this requirement', risk: 'low' },
-      { section: 'DSAR & Other', name: 'cookieLink', label: 'Is there a cookie preferences link or widget?', text: 'If you are hiding the cookie icon that exists out of the box for Osano cookie consent, ensure you provide users with another way to adjust preferences at any time by displaying a persistent link in the footer.', risk: 'high' }
-    ];
+  // DSAR & Other
+  {
+    section: 'DSAR & Other',
+    name: 'dsarForm',
+    label: 'Is a DSAR form present and accessible?',
+    text: 'Provide a DSAR form in a discoverable location (footer or privacy policy) to fulfill subject rights obligations. If one does not exist at all, be sure to put a process in place ASAP.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22472143448340-DSAR-Getting-Started'
+  },
+  {
+    section: 'DSAR & Other',
+    name: 'dsarLink',
+    label: 'Is the DSAR form linked in the privacy policy?',
+    text: 'Include a hyperlink or an embed of your DSAR form or process in your privacy policy to ensure users can locate it easily. It MAY exist in a different location, but should be referenced in your privacy policy to avoid risk.',
+    risk: 'medium',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/34300102859284-DSAR-Link-in-CMP-Drawer-Setup-Guide'
+  },
+  {
+    section: 'DSAR & Other',
+    name: 'dsarRights',
+    label: 'Does the DSAR form offer full rights (access, deletion, correction, etc.)?',
+    text: 'Support all required rights under applicable laws (GDPR, CPRA) including correction, access, deletion, objection, and portability. These should be called out specifically and serviced based on requirment for best practice.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22471428469524-Subject-rights-DSAR-overview'
+  },
+  {
+    section: 'DSAR & Other',
+    name: 'dnsLink',
+    label: 'Is there a "Do Not Sell" link in the footer?',
+    text: 'Osano automatically supports do not sell in the Cookie Consent preferences drawer, however this can appear as "hidden". For greater visibility, add a footer link labeled "Do Not Sell" to comply with CPRA/CCPA Do Not Sell/Share requirements. Add the standalone Do Not Sell modal to support this requirement',
+    risk: 'low',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22471437259028-How-to-set-up-the-do-not-sell-modal'
+  },
+  {
+    section: 'DSAR & Other',
+    name: 'cookieLink',
+    label: 'Is there a cookie preferences link or widget?',
+    text: 'If you are hiding the cookie icon that exists out of the box for Osano cookie consent, ensure you provide users with another way to adjust preferences at any time by displaying a persistent link in the footer.',
+    risk: 'high',
+    docLink: 'https://docs.osano.com/hc/en-us/articles/22469396579220-Hiding-the-Cookie-Widget-Cookie-Icon'
+  }
+];
 
     const form = document.getElementById('reviewForm');
     let currentSection = '';
