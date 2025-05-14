@@ -266,14 +266,14 @@
       }
       const riskClass = risk === 'high' ? 'high-risk' : risk === 'medium' ? 'medium-risk' : 'low-risk';
       const div = document.createElement('div');
-      div.className = `question ${riskClass}`;
-      div.innerHTML = `
+      div.className = question ${riskClass};
+      div.innerHTML = 
         <strong>${label}</strong>
         <label><input type="radio" name="${name}" value="yes"> Yes</label>
         <label><input type="radio" name="${name}" value="no"> No</label>
         <label for="note-${name}"><em>Optional Notes:</em></label>
         <textarea name="note-${name}" rows="2" placeholder="Add specifics like '_ga is classified as essential, should be analytics'."></textarea>
-      `;
+      ;
       form.appendChild(div);
     });
 
@@ -295,7 +295,7 @@ function generateReport() {
   if (unanswered.length > 0) {
     alert('Please answer all questions before generating the report.');
     unanswered.forEach(({ name }) => {
-      const questionBlock = document.querySelector(`[name="${name}"]`)?.closest('.question');
+      const questionBlock = document.querySelector([name="${name}"])?.closest('.question');
       if (questionBlock) {
         questionBlock.style.borderColor = '#F04438';
         questionBlock.style.boxShadow = '0 0 10px rgba(240, 68, 56, 0.4)';
@@ -314,10 +314,10 @@ function generateReport() {
 
   checks.forEach(({name, label, text, risk, section}) => {
     const value = form[name]?.value;
-    const notes = form[`note-${name}`]?.value.trim();
+    const notes = form[note-${name}]?.value.trim();
     const answer = value === 'yes' ? '✅ Yes' : value === 'no' ? '❌ No' : '—';
 
-    qa += `<li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? `<div class="note-block"><strong>Notes:</strong> ${notes}</div>` : ''}</li>`;
+    qa += <li><strong>${label}</strong><br/>Answer: <em>${answer}</em>${notes ? <div class="note-block"><strong>Notes:</strong> ${notes}</div> : ''}</li>;
 
     if (value === 'no') {
       riskBuckets[risk].push({
@@ -335,21 +335,16 @@ function generateReport() {
   let html = '<h2>Implementation Review Report</h2>';
   html += '<p>This report summarizes your implementation health by risk priority. Recommendations are grouped accordingly and include any Implementation Manager notes.</p>';
 
-const renderRiskSection = (title, icon, color, items) => {
-  if (!items.length) return '';
-  let out = `<h3 style="margin-top:32px;">${icon} ${title}</h3><ul>`;
-  items.forEach((item) => {
-    out += `<li>
-      <span class="${color}">${item.label}</span><br/>
-      ${item.text}
-      ${item.docLink ? `<div class="note-block">Documentation: ${item.docLink}</div>` : ''}
-      ${item.notes ? `<div class="note-block"><em>Note:</em> ${item.notes}</div>` : ''}
-    </li><br/>`;
-  });
-  out += '</ul>';
-  return out;
-};
-});
+  const renderRiskSection = (title, icon, color, items) => {
+    if (!items.length) return '';
+    let out = <h3 style="margin-top:32px;">${icon} ${title}</h3><ul>;
+items.forEach((item) => {
+  out += <li>
+    <span class="${color}">${item.label}</span><br/>
+    ${item.text}
+    ${item.docLink ? <div class="note-block"><a href="${item.docLink}" target="_blank">View documentation ↗</a></div> : ''}
+    ${item.notes ? <div class="note-block"><em>Note:</em> ${item.notes}</div> : ''}
+  </li><br/>;
 });
     out += '</ul>';
     return out;
@@ -361,9 +356,9 @@ const renderRiskSection = (title, icon, color, items) => {
 
   // Render no-issue confirmations
   if (riskBuckets.pass.length) {
-    html += `<h3 style="margin-top:32px;">✅ No Issues Found</h3><ul>`;
+    html += <h3 style="margin-top:32px;">✅ No Issues Found</h3><ul>;
     riskBuckets.pass.forEach(({ label, section }) => {
-      html += `<li><strong>${label}</strong> — No additional action needed (${section})</li>`;
+      html += <li><strong>${label}</strong> — No additional action needed (${section})</li>;
     });
     html += '</ul>';
   }
@@ -415,7 +410,7 @@ document.getElementById('downloadBtn').addEventListener('click', async () => {
     pdf.setPage(i);
     pdf.setFontSize(10);
     pdf.setTextColor('#666');
-    pdf.text(`Report run on ${today}`, margin, pageHeight - 20);
+    pdf.text(Report run on ${today}, margin, pageHeight - 20);
     pdf.text('Powered by Osano', pageWidth - margin - 100, pageHeight - 20);
   }
 
