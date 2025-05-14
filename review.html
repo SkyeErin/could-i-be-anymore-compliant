@@ -231,27 +231,62 @@
 document.getElementById('downloadBtn').addEventListener('click', async () => {
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p', 'pt', 'a4');
+
+  const margin = 40;
+  const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const elements = Array.from(document.querySelectorAll('#report > *'));
-  let yOffset = 20;
+
+  let yOffset = margin + 50; // Leave space for logo
+
+  const logo = new Image();
+  logo.src = 'https://shop.osano.com/cdn-cgi/image/fit=scale-down,format=auto,width=300/api/store/assets/branding/75781b2b-0098-44de-875a-8a3dcbbf5274';
+
+logo.onload = async () => {
+  const today = new Date().toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const totalPages = [];
 
   for (let i = 0; i < elements.length; i++) {
     const el = elements[i];
     const canvas = await html2canvas(el, { scale: 2, useCORS: true });
     const imgData = canvas.toDataURL('image/png');
-    const imgWidth = pdf.internal.pageSize.getWidth() - 40;
+
+    const imgWidth = pageWidth - margin * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    if (yOffset + imgHeight > pageHeight - 20) {
-      pdf.addPage();
-      yOffset = 20;
+    if (i === 0) {
+      // First page: add logo
+      pdf.addImage(logo, 'PNG', margin, margin - 10, 100, 30);
+      yOffset = margin + 50;
     }
 
-    pdf.addImage(imgData, 'PNG', 20, yOffset, imgWidth, imgHeight);
+    if (yOffset + imgHeight > pageHeight - margin - 40) {
+      totalPages.push(pdf.internal.getNumberOfPages());
+      pdf.addPage();
+      yOffset = margin;
+    }
+
+    pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
     yOffset += imgHeight + 10;
   }
 
+  // Footer on each page
+  const pageCount = pdf.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(10);
+    pdf.setTextColor('#666');
+    pdf.text(`Report run on ${today}`, margin, pageHeight - 20);
+    pdf.text('Powered by Osano', pageWidth - margin - 100, pageHeight - 20);
+  }
+
   pdf.save('osano-implementation-review.pdf');
+};
 });
 </script>
 </body>
