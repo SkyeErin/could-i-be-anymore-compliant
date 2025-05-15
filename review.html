@@ -361,5 +361,52 @@
       downloadBtn.style.display = 'inline-block';
     }
   </script>
+
+  <script>
+document.getElementById('downloadBtn').addEventListener('click', async () => {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p', 'pt', 'a4');
+
+  const margin = 40;
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const elements = Array.from(document.querySelectorAll('#report > *'));
+  const today = new Date().toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  let yOffset = margin;
+
+  for (let i = 0; i < elements.length; i++) {
+    const el = elements[i];
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+
+    const imgWidth = pageWidth - margin * 2;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    if (yOffset + imgHeight > pageHeight - margin - 40) {
+      pdf.addPage();
+      yOffset = margin;
+    }
+
+    pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
+    yOffset += imgHeight + 10;
+  }
+
+  const pageCount = pdf.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(10);
+    pdf.setTextColor('#666');
+    pdf.text(`Report run on ${today}`, margin, pageHeight - 20);
+    pdf.text('Powered by Osano', pageWidth - margin - 100, pageHeight - 20);
+  }
+
+  pdf.save('osano-implementation-review.pdf');
+});
+</script>
 </body>
 </html>
