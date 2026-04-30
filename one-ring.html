@@ -23,8 +23,91 @@
         gtag("set", "ads_data_redaction", true);
     </script>
 
-    <!-- Osano Consent Manager -->
-    <script src="https://cmp.osano.com/AzZcpvRm9bbsqngN/627e5e74-8a01-47df-8d04-116e0ef84981/osano.js"></script>
+  <!-- Place in <head>, BEFORE the Osano script tag -->
+<style id="osano-jurisdiction-hide">
+  /* Hide by default to prevent flash. Revealed via JS unless visitor is in CO or TX. */
+  .osano-cm-window,
+  .osano-cm-dialog {
+    display: none !important;
+  }
+</style>
+
+<script>
+  // Ensure the Osano queue exists (safe if already present)
+  (function (w, o, d) {
+    w[o] = w[o] || function () { w[o][d].push(arguments); };
+    w[o][d] = w[o][d] || [];
+  })(window, 'Osano', 'data');
+
+  // States where the banner should stay hidden.
+  // Matched as substrings against window.Osano.cm.jurisdiction (e.g. "us-co", "us-tx").
+  var HIDDEN_JURISDICTIONS = ['us-co', 'us-tx'];
+
+  var decided = false;
+
+  function reveal() {
+    var styleEl = document.getElementById('osano-jurisdiction-hide');
+    if (styleEl && styleEl.parentNode) {
+      styleEl.parentNode.removeChild(styleEl);
+    }
+  }
+
+  function hideBanner() {
+    var banner = document.querySelector('.osano-cm-dialog') ||
+                 document.querySelector('.osano-cm-window');
+    if (banner) {
+      banner.style.setProperty('display', 'none', 'important');
+    }
+  }
+
+  function decideFromJurisdiction() {
+    if (decided) return;
+    try {
+      var j = (window.Osano && window.Osano.cm && window.Osano.cm.jurisdiction) || '';
+      if (typeof j === 'undefined') return; // not ready yet — let the poller retry
+
+      decided = true;
+      var jLower = String(j).toLowerCase();
+
+      var shouldHide = HIDDEN_JURISDICTIONS.some(function (code) {
+        return jLower.indexOf(code) !== -1;
+      });
+
+      if (shouldHide) {
+        hideBanner();
+        // Leave the <style> hide rule in place too, as a belt-and-suspenders.
+        console.log('Osano banner hidden for jurisdiction:', j);
+      } else {
+        reveal();
+        console.log('Osano banner shown for jurisdiction:', j);
+      }
+    } catch (e) {
+      console.warn('Jurisdiction check failed:', e);
+      reveal(); // fail open
+    }
+  }
+
+  // Preferred: Osano's init hook
+  Osano('onInitialized', function () {
+    decideFromJurisdiction();
+  });
+
+  // Fallback: poll in case onInitialized fired before this script attached
+  (function waitForOsano(retries) {
+    if (decided) return;
+    if (window.Osano && window.Osano.cm && typeof window.Osano.cm.jurisdiction !== 'undefined') {
+      decideFromJurisdiction();
+    } else if (retries > 0) {
+      setTimeout(function () { waitForOsano(retries - 1); }, 300);
+    } else {
+      // Gave up waiting — reveal so visitors outside CO/TX aren't stuck with a hidden banner.
+      reveal();
+    }
+  })(20);
+</script>
+
+<!-- Osano script loads after the listener is registered -->
+<script src="https://cmp.osano.com/AzZcpvRm9bbsqngN/fa46a791-38ee-4e7a-b831-0cdb56cea0ed/osano.js"></script>
 
     <style>
         body {
