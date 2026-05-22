@@ -57,6 +57,11 @@
   --osano-font-weight-medium: 600;
 }
 
+/* Card titles — green accent */
+h4[data-testid="card-title"] {
+  color: #33f28b;
+}
+
 /* Select / multiselect dropdown chevron — white for dark bg */
 .osano-input--type_select,
 .osano-input--type_multiselect,
