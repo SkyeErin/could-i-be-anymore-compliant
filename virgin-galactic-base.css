@@ -125,8 +125,29 @@ body {
   align-self: stretch;
   width: 100%;
   height: var(--brand-logo-height);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
   background: var(--brand-logo) no-repeat right center / contain;
+}
+
+/* 5b. Compact header + hidden location selector --------------------------- */
+.osano-root .osano-header {
+  min-height: 0;
+  height: auto;
+  padding-block: 0.75rem;
+  margin-bottom: 0;
+}
+
+.osano-root .osano-root__container {
+  padding-top: 1.25rem;
+}
+
+/* Hides the whole jurisdiction banner (message + selector), since the
+   message asks people to verify a selector they can no longer see.
+   Delete this block to bring it back. */
+.osano-root .osano-container__localization-message,
+.osano-root .osano-localization-message,
+.osano-root .osano-form__location-select {
+  display: none;
 }
 
 /* 6. Localization message ------------------------------------------------- */
