@@ -148,7 +148,8 @@ body {
 .osano-root .osano-localization-message,
 .osano-root .osano-form__location-select,
 .osano-root .osano-control-header,
-.osano-root .osano-container__control-header {
+.osano-root .osano-container__control-header,
+.osano-root :has(> .osano-localization-message) {
   display: none;
 }
 
