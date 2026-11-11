@@ -1,0 +1,376 @@
+/* ==========================================================================
+   Virgin Galactic-inspired base stylesheet
+   Dark, cinematic, lots of breathing room. Brand fonts are proprietary,
+   so free Google Fonts stand-ins are used below.
+
+   Add to <head>:
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+   ========================================================================== */
+
+/* ---------- Tokens ---------- */
+:root {
+  /* Color */
+  --vg-space:        #060F1B;  /* primary background, near-black navy */
+  --vg-space-raised: #0C1928;  /* cards, nav on scroll */
+  --vg-slate:        #39596E;  /* borders, secondary surfaces */
+  --vg-steel:        #7094AA;  /* muted text, icons */
+  --vg-powder:       #B7DEF3;  /* accent, links, focus */
+  --vg-silver:       #C9D1D8;  /* body text on dark */
+  --vg-white:        #FFFFFF;  /* headlines, primary CTA */
+
+  --vg-border:       rgba(183, 222, 243, 0.16);
+  --vg-overlay:      linear-gradient(180deg, rgba(6,15,27,0) 0%, rgba(6,15,27,0.85) 100%);
+
+  /* Type */
+  --vg-font-display: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --vg-font-body:    "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --vg-fs-xs:   0.75rem;                       /* 12 */
+  --vg-fs-sm:   0.875rem;                      /* 14 */
+  --vg-fs-base: 1rem;                          /* 16 */
+  --vg-fs-lg:   1.25rem;                       /* 20 */
+  --vg-fs-xl:   clamp(1.5rem, 2.5vw, 2rem);
+  --vg-fs-2xl:  clamp(2rem, 4vw, 3rem);
+  --vg-fs-3xl:  clamp(2.5rem, 6vw, 4.5rem);
+  --vg-fs-hero: clamp(3rem, 8vw, 6.5rem);
+
+  --vg-tracking-wide:  0.2em;
+  --vg-tracking-tight: -0.01em;
+
+  /* Spacing */
+  --vg-space-1: 0.5rem;
+  --vg-space-2: 1rem;
+  --vg-space-3: 1.5rem;
+  --vg-space-4: 2rem;
+  --vg-space-5: 3rem;
+  --vg-space-6: 5rem;
+  --vg-space-7: 8rem;
+
+  /* Layout */
+  --vg-max-width: 1440px;
+  --vg-content-width: 72ch;
+  --vg-gutter: clamp(1.25rem, 4vw, 4rem);
+
+  /* Shape and motion */
+  --vg-radius-pill: 999px;
+  --vg-radius-sm: 4px;
+  --vg-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --vg-duration: 400ms;
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--vg-space);
+  color: var(--vg-silver);
+  font-family: var(--vg-font-body);
+  font-size: var(--vg-fs-base);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+img, video, svg { display: block; max-width: 100%; height: auto; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* ---------- Typography ---------- */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--vg-space-3);
+  color: var(--vg-white);
+  font-family: var(--vg-font-display);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: var(--vg-tracking-tight);
+}
+
+h1 { font-size: var(--vg-fs-3xl); }
+h2 { font-size: var(--vg-fs-2xl); }
+h3 { font-size: var(--vg-fs-xl); font-weight: 400; }
+h4 { font-size: var(--vg-fs-lg); font-weight: 500; }
+h5, h6 {
+  font-size: var(--vg-fs-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+}
+
+p { margin: 0 0 var(--vg-space-3); max-width: var(--vg-content-width); }
+strong, b { font-weight: 500; color: var(--vg-white); }
+small { font-size: var(--vg-fs-sm); }
+
+/* Big statement text ("Harnessing spaceflight to...") */
+.vg-statement {
+  font-family: var(--vg-font-display);
+  font-size: var(--vg-fs-2xl);
+  font-weight: 300;
+  line-height: 1.25;
+  color: var(--vg-white);
+  max-width: 24ch;
+}
+
+/* Section kicker ("WHY WE GO", "A BIGGER MISSION") */
+.vg-eyebrow {
+  display: block;
+  margin-bottom: var(--vg-space-2);
+  font-family: var(--vg-font-display);
+  font-size: var(--vg-fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+  color: var(--vg-steel);
+}
+
+.vg-lead {
+  font-size: var(--vg-fs-lg);
+  color: var(--vg-silver);
+  max-width: 48ch;
+}
+
+/* ---------- Links ---------- */
+a {
+  color: var(--vg-powder);
+  text-decoration: none;
+  transition: color var(--vg-duration) var(--vg-ease);
+}
+a:hover { color: var(--vg-white); }
+
+:focus-visible {
+  outline: 2px solid var(--vg-powder);
+  outline-offset: 3px;
+}
+
+/* ---------- Buttons ---------- */
+.vg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vg-space-1);
+  padding: 0.9rem 2rem;
+  border: 1px solid var(--vg-white);
+  border-radius: var(--vg-radius-pill);
+  background: transparent;
+  color: var(--vg-white);
+  font-family: var(--vg-font-display);
+  font-size: var(--vg-fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+  cursor: pointer;
+  transition:
+    background var(--vg-duration) var(--vg-ease),
+    color var(--vg-duration) var(--vg-ease),
+    border-color var(--vg-duration) var(--vg-ease);
+}
+.vg-btn:hover { background: var(--vg-white); color: var(--vg-space); }
+
+/* Solid primary ("Begin Journey") */
+.vg-btn--primary { background: var(--vg-white); color: var(--vg-space); }
+.vg-btn--primary:hover { background: var(--vg-powder); border-color: var(--vg-powder); }
+
+/* Quiet text link with underline ("Explore Experience") */
+.vg-btn--link {
+  padding: 0 0 0.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--vg-border);
+  border-radius: 0;
+}
+.vg-btn--link:hover { background: none; color: var(--vg-powder); border-color: var(--vg-powder); }
+
+/* ---------- Layout ---------- */
+.vg-container {
+  width: 100%;
+  max-width: var(--vg-max-width);
+  margin-inline: auto;
+  padding-inline: var(--vg-gutter);
+}
+
+.vg-section { padding-block: var(--vg-space-7); }
+.vg-section--tight { padding-block: var(--vg-space-6); }
+.vg-section--raised { background: var(--vg-space-raised); }
+
+.vg-grid {
+  display: grid;
+  gap: var(--vg-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.vg-split {
+  display: grid;
+  gap: var(--vg-space-5);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .vg-split { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------- Header / nav ---------- */
+.vg-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  padding-block: var(--vg-space-3);
+  transition: background var(--vg-duration) var(--vg-ease);
+}
+.vg-header.is-scrolled {
+  background: rgba(6, 15, 27, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--vg-border);
+}
+.vg-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--vg-space-4);
+}
+
+.vg-nav { display: flex; gap: var(--vg-space-4); list-style: none; margin: 0; padding: 0; }
+.vg-nav a {
+  color: var(--vg-white);
+  font-family: var(--vg-font-display);
+  font-size: var(--vg-fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+}
+.vg-nav a:hover, .vg-nav a[aria-current="page"] { color: var(--vg-powder); }
+
+@media (max-width: 899px) {
+  .vg-nav { display: none; }
+}
+
+/* ---------- Hero ---------- */
+.vg-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 100svh;
+  padding-block: var(--vg-space-7) var(--vg-space-6);
+  overflow: hidden;
+  isolation: isolate;
+}
+.vg-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.vg-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--vg-overlay);
+}
+.vg-hero h1 {
+  font-size: var(--vg-fs-hero);
+  max-width: 14ch;
+  margin-bottom: var(--vg-space-4);
+}
+
+/* "Scroll to Explore" cue */
+.vg-scroll-cue {
+  font-size: var(--vg-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+  color: var(--vg-steel);
+}
+
+/* ---------- Cards / media ---------- */
+.vg-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--vg-space-raised);
+  border: 1px solid var(--vg-border);
+}
+.vg-card__media { aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
+.vg-card__body { padding: var(--vg-space-4); }
+
+.vg-image-banner {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+}
+
+/* ---------- Forms ---------- */
+label {
+  display: block;
+  margin-bottom: var(--vg-space-1);
+  font-size: var(--vg-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--vg-tracking-wide);
+  color: var(--vg-steel);
+}
+input, select, textarea {
+  width: 100%;
+  padding: 0.85rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--vg-slate);
+  border-radius: 0;
+  background: transparent;
+  color: var(--vg-white);
+  transition: border-color var(--vg-duration) var(--vg-ease);
+}
+input::placeholder, textarea::placeholder { color: var(--vg-steel); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-bottom-color: var(--vg-powder);
+}
+
+/* ---------- Dividers ---------- */
+hr {
+  border: 0;
+  border-top: 1px solid var(--vg-border);
+  margin-block: var(--vg-space-5);
+}
+
+/* ---------- Footer ---------- */
+.vg-footer {
+  padding-block: var(--vg-space-6) var(--vg-space-4);
+  border-top: 1px solid var(--vg-border);
+  font-size: var(--vg-fs-sm);
+  color: var(--vg-steel);
+}
+.vg-footer a { color: var(--vg-silver); }
+.vg-footer a:hover { color: var(--vg-white); }
+.vg-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vg-space-2);
+  margin-top: var(--vg-space-5);
+  font-size: var(--vg-fs-xs);
+}
+
+/* ---------- Utilities ---------- */
+.vg-text-center { text-align: center; }
+.vg-text-center p, .vg-text-center .vg-statement { margin-inline: auto; }
+.vg-muted { color: var(--vg-steel); }
+.vg-visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
