@@ -1,258 +1,329 @@
 /* ==========================================================================
-   "Launch at Sunset" theme for the Osano DSAR form
-   Big gradient sky, leaf-cut corners, a tilted banner, and every request
-   tile in its own color with a hard offset shadow.
+   "Launch at Sunset" v2: Osano DSAR form theme
 
-   Some selectors below are pattern-matched ([class*="..."]) because the
-   tile, card, and banner class names aren't documented. Once we have the
-   real class names from DevTools, swap them in and drop the guesses.
+   How this file is organized
+   1. Fonts
+   2. Theme variables (the only section you should need to edit)
+   3. Osano token overrides
+   4. Page + container (one continuous background, glass panels)
+   5. Logo slot
+   6. Localization message
+   7. Control header (title + subtitle)
+   8. Request cards
+   9. Buttons, fields, location select
+   10. Motion preferences
+
+   Specificity approach: rules are scoped under .osano-root so they beat
+   Osano's single-class defaults without needing !important.
    ========================================================================== */
 
+/* 1. Fonts ---------------------------------------------------------------- */
 @import url("https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap");
 
-/* --------------------------------------------------------------------------
-   1. Tokens
-   -------------------------------------------------------------------------- */
+/* 2. Theme variables ------------------------------------------------------ */
 :root {
-  --sun-ink:     #1A0B2E;   /* outlines, titles */
-  --sun-plum:    #4A2A6E;   /* body copy */
-  --sun-violet:  #6B2BD9;
-  --sun-magenta: #F0388F;
-  --sun-orange:  #FF7A2F;
-  --sun-gold:    #FFC83D;
-  --sun-cream:   #FFF7EA;
+  /* Palette (Osano brand colors) */
+  --theme-ink:         #0E0416;
+  --theme-night:       #180D43;
+  --theme-purple:      #7A3FF1;
+  --theme-violet:      #C57EC4;
+  --theme-peach:       #F09F92;
+  --theme-yellow:      #EEB155;
+  --theme-white:       #FFFFFF;
 
-  /* Tile colors, cycled across the grid */
-  --tile-1: #FFD8E8;  /* pink */
-  --tile-2: #CFF3FF;  /* sky */
-  --tile-3: #FFE9A8;  /* butter */
-  --tile-4: #D9CCFF;  /* lilac */
-  --tile-5: #C9F7D4;  /* mint */
-  --tile-6: #FFD3B8;  /* peach */
+  /* Tile tints, cycled across the request cards */
+  --tile-a: #F0E7FA;   /* light violet */
+  --tile-b: #FDE6E2;   /* peach */
+  --tile-c: #FCEFD6;   /* yellow */
+  --tile-d: #DDF6EA;   /* green */
+  --tile-e: #DCEFFD;   /* light blue */
+  --tile-f: #F6E3F6;   /* violet */
 
-  /* Osano tokens */
-  --osano-color-primary: #6B2BD9;
-  --osano-color-primary-dark: #5A1FC4;
-  --osano-color-primary-readable: #FFFFFF;
-  --osano-color-primary-transparent: rgba(107, 43, 217, 0.35);
+  /* Glass panels */
+  --glass-bg:      rgba(24, 13, 67, 0.38);
+  --glass-border:  rgba(255, 255, 255, 0.22);
+  --glass-blur:    18px;
 
-  --osano-color-primary-text: #1A0B2E;
-  --osano-color-text-secondary: #4A2A6E;
-  --osano-color-text-subtle: #4A2A6E;
-  --osano-color-text-super-subtle: #8B78A8;
-  --osano-color-helper-text: #4A2A6E;
-  --osano-color-grayscale-950: #1A0B2E;
+  /* Shape */
+  --cut-lg: 0 40px 0 40px;     /* leaf corners: square, round, square, round */
+  --cut-md: 0 22px 0 22px;
+  --cut-md-flip: 22px 0 22px 0;
+  --pill: 999px;
+
+  /* Depth */
+  --pop-shadow: 6px 6px 0 0 var(--theme-ink);
+  --pop-shadow-hover: 10px 10px 0 0 var(--theme-ink);
+
+  /* Type */
+  --font-display: "Syne", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+
+  /* Logo: swap this url() for the real Osano logo (a hosted SVG or PNG,
+     or an inlined data URI). Placeholder is a made-up "Nova Labs" mark. */
+  --brand-logo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 44'%3E%3Ccircle cx='22' cy='22' r='11' fill='%23EEB155'/%3E%3Cellipse cx='22' cy='22' rx='20' ry='6' fill='none' stroke='white' stroke-width='2.5' transform='rotate(-25 22 22)'/%3E%3Ccircle cx='40' cy='7' r='2.5' fill='white'/%3E%3Ctext x='52' y='29' font-family='Arial, Helvetica, sans-serif' font-size='20' font-weight='700' fill='white' letter-spacing='-0.5'%3ENova Labs%3C/text%3E%3C/svg%3E");
+  --brand-logo-height: 36px;
+
+  /* Motion */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 3. Osano token overrides ------------------------------------------------ */
+:root {
+  --osano-color-primary: var(--theme-purple);
+  --osano-color-primary-readable: var(--theme-white);
+  --osano-color-primary-text: var(--theme-ink);
+  --osano-color-text-secondary: #3A2C4F;
+  --osano-color-text-subtle: #3A2C4F;
+  --osano-color-text-super-subtle: #8A7F99;
+  --osano-color-helper-text: #3A2C4F;
 
   --osano-color-bg-light-gray: transparent;
-  --osano-color-bg-card: #FFF7EA;
-  --osano-color-bg-table-header: #FFC83D;
-  --osano-color-bg-default: #FFFFFF;
-  --osano-color-background: #FFFFFF;
-  --osano-color-bg-button-secondary: #FFFFFF;
+  --osano-color-border-subtle: var(--theme-ink);
+  --osano-color-border-default: var(--theme-ink);
 
-  --osano-color-border-subtle: #1A0B2E;
-  --osano-color-border-default: #1A0B2E;
-
-  --osano-color-error: #D7263D;
-  --osano-color-required: #F0388F;
+  --osano-color-error: #F04438;
+  --osano-color-required: #F04438;
 
   --osano-radius-md: 0 14px 0 14px;
-  --osano-radius-lg: 0 28px 0 28px;
-  --osano-shadow-xl: 10px 10px 0 0 #1A0B2E;
+  --osano-radius-lg: var(--cut-lg);
 
-  --osano-font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
-
-  --osano-heading-lg-size: 40px;
-  --osano-heading-lg-weight: 800;
-  --osano-heading-lg-line-height: 44px;
-  --osano-heading-lg-letter-spacing: -1px;
-
-  --osano-heading-sm-size: 19px;
-  --osano-heading-sm-weight: 700;
-  --osano-heading-sm-line-height: 24px;
-  --osano-heading-sm-letter-spacing: -0.2px;
-
-  --osano-body-size: 15px;
-  --osano-body-weight: 400;
-  --osano-body-line-height: 22px;
-
-  --osano-caption-size: 14px;
-  --osano-caption-weight: 400;
-  --osano-caption-line-height: 20px;
+  --osano-font-family: var(--font-body);
   --osano-caption-letter-spacing: 0;
 }
 
-/* --------------------------------------------------------------------------
-   2. The sky
-   -------------------------------------------------------------------------- */
-html, body {
-  min-height: 100%;
-}
-
+/* 4. Page + container ----------------------------------------------------- */
+/* One gradient on the page. Everything above it is transparent or glass,
+   so nothing reads as a separate colored box. */
 body {
+  min-height: 100vh;
   background:
-    radial-gradient(circle at 85% 12%, rgba(255, 200, 61, 0.9) 0, rgba(255, 200, 61, 0) 22%),
-    radial-gradient(ellipse at 10% 90%, rgba(107, 43, 217, 0.55) 0, rgba(107, 43, 217, 0) 45%),
-    linear-gradient(160deg, #3B0F7A 0%, #8A1FA8 28%, #F0388F 55%, #FF7A2F 80%, #FFC83D 100%)
-    !important;
-  background-attachment: fixed !important;
-  color: var(--sun-ink);
+    radial-gradient(circle at 88% 10%, rgba(238, 177, 85, 0.85) 0, rgba(238, 177, 85, 0) 24%),
+    radial-gradient(ellipse at 0% 100%, rgba(122, 63, 241, 0.6) 0, rgba(122, 63, 241, 0) 50%),
+    linear-gradient(155deg, var(--theme-night) 0%, var(--theme-purple) 35%, var(--theme-violet) 62%, var(--theme-peach) 82%, var(--theme-yellow) 100%);
+  background-attachment: fixed;
 }
 
-.osano-form {
-  padding: 3.5rem 2.5rem 4rem;
-  background: transparent !important;
+.osano-root,
+.osano-root .osano-body,
+.osano-root .osano-root__container,
+.osano-root .osano-container {
+  background: transparent;
 }
 
-/* --------------------------------------------------------------------------
-   3. Headings
-   -------------------------------------------------------------------------- */
-.osano-form h1,
-.osano-form h2,
-.osano-form h3 {
-  font-family: "Syne", "Helvetica Neue", Arial, sans-serif !important;
-  font-weight: 800 !important;
-  color: var(--sun-ink) !important;
+.osano-root .osano-root__container {
+  font-family: var(--font-body);
+  color: var(--theme-white);
+}
+
+/* 5. Logo slot ------------------------------------------------------------ */
+/* Decorative only: a pseudo-element can't carry alt text, so screen
+   readers skip it. In-flow rather than absolutely positioned, so it
+   never overlaps the banner at narrow widths. */
+.osano-root .osano-root__container::before {
+  content: "";
+  display: block;
+  align-self: stretch;
+  width: 100%;
+  height: var(--brand-logo-height);
+  margin-bottom: 1.5rem;
+  background: var(--brand-logo) no-repeat right center / contain;
+}
+
+/* 6. Localization message ------------------------------------------------- */
+.osano-root .osano-localization-message {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--cut-lg);
+  color: var(--theme-white);
+}
+
+.osano-root .osano-localization-message p,
+.osano-root .osano-localization-message span {
+  color: var(--theme-white);
+}
+
+/* 7. Control header ------------------------------------------------------- */
+.osano-root .osano-card {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--cut-lg);
+  box-shadow: none;
+}
+
+.osano-root .osano-control-header,
+.osano-root .osano-control-header * {
+  color: var(--theme-white);
+}
+
+.osano-root .osano-control-header :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.05;
   letter-spacing: -0.03em;
 }
 
-.osano-form h4,
-.osano-form h5,
-.osano-form h6 {
-  font-family: "Syne", "Helvetica Neue", Arial, sans-serif !important;
-  font-weight: 700 !important;
-  color: var(--sun-ink) !important;
+.osano-root .osano-control-header p {
+  opacity: 0.85;
 }
 
-.osano-form p {
-  letter-spacing: 0 !important;
+/* 8. Request cards -------------------------------------------------------- */
+/* Each card picks up a tint from its position. The variable is set on the
+   list's direct children, so this works whether the cards are direct
+   children or wrapped in an <li>. */
+.osano-root .osano-card-list > :nth-child(6n + 1) { --tile-bg: var(--tile-a); --tile-cut: var(--cut-md); }
+.osano-root .osano-card-list > :nth-child(6n + 2) { --tile-bg: var(--tile-b); --tile-cut: var(--cut-md-flip); }
+.osano-root .osano-card-list > :nth-child(6n + 3) { --tile-bg: var(--tile-c); --tile-cut: var(--cut-md-flip); }
+.osano-root .osano-card-list > :nth-child(6n + 4) { --tile-bg: var(--tile-d); --tile-cut: var(--cut-md); }
+.osano-root .osano-card-list > :nth-child(6n + 5) { --tile-bg: var(--tile-e); --tile-cut: var(--cut-md); }
+.osano-root .osano-card-list > :nth-child(6n + 6) { --tile-bg: var(--tile-f); --tile-cut: var(--cut-md-flip); }
+
+.osano-root .osano-card-list__card {
+  background: var(--tile-bg, var(--tile-a));
+  border: 2.5px solid var(--theme-ink);
+  border-radius: var(--tile-cut, var(--cut-md));
+  box-shadow: var(--pop-shadow);
+  color: var(--theme-ink);
+  cursor: pointer;
+  transition:
+    transform 260ms var(--ease-pop),
+    box-shadow 260ms var(--ease-pop);
 }
 
-/* --------------------------------------------------------------------------
-   4. Jurisdiction banner: tilted gold sticker
-   -------------------------------------------------------------------------- */
-.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]):not(select):not(option) {
-  background: var(--sun-gold) !important;
-  color: var(--sun-ink) !important;
-  border: 3px solid var(--sun-ink) !important;
-  border-radius: 0 32px 0 32px !important;
-  box-shadow: 8px 8px 0 0 var(--sun-ink) !important;
-  transform: rotate(-1.2deg);
-  font-weight: 500;
-}
-
-.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]) * {
-  color: var(--sun-ink) !important;
-}
-
-.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]) select {
-  background-color: #FFFFFF !important;
-  border: 2px solid var(--sun-ink) !important;
-  border-radius: 999px !important;
-  font-weight: 600;
-}
-
-/* --------------------------------------------------------------------------
-   5. Main card: cream, leaf corners, chunky offset shadow
-   -------------------------------------------------------------------------- */
-.osano-form :is([class*="card"], [class*="Card"], [class*="panel"]):not(:is([class*="option"], [class*="request"], [class*="tile"])) {
-  background: var(--sun-cream) !important;
-  border: 3px solid var(--sun-ink) !important;
-  border-radius: 0 56px 0 56px !important;
-  box-shadow: 14px 14px 0 0 var(--sun-ink) !important;
-}
-
-/* --------------------------------------------------------------------------
-   6. Request tiles: every one a different color, tilt on hover
-   -------------------------------------------------------------------------- */
-.osano-form :is(
-  [class*="request-type"], [class*="requestType"], [class*="RequestType"],
-  [class*="option"], [class*="tile"], [class*="choice"],
-  button:not(.osano-button)
-):not(select):not(option):not(input) {
-  position: relative;
-  background: var(--tile-1) !important;
-  border: 3px solid var(--sun-ink) !important;
-  border-radius: 0 24px 0 24px !important;
-  box-shadow: 6px 6px 0 0 var(--sun-ink) !important;
-  color: var(--sun-ink) !important;
-  text-align: left;
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+2) { background: var(--tile-2) !important; border-radius: 24px 0 24px 0 !important; }
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+3) { background: var(--tile-3) !important; border-radius: 24px 0 24px 0 !important; }
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+4) { background: var(--tile-4) !important; }
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+5) { background: var(--tile-5) !important; }
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+6) { background: var(--tile-6) !important; border-radius: 24px 0 24px 0 !important; }
-
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)) * {
-  color: var(--sun-ink) !important;
-  letter-spacing: 0 !important;
-}
-
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):hover {
-  transform: translate(-3px, -3px) rotate(-1deg);
-  box-shadow: 10px 10px 0 0 var(--sun-magenta) !important;
-}
-
-.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):focus-visible {
-  outline: 3px dashed var(--sun-violet);
-  outline-offset: 5px;
-}
-
-/* --------------------------------------------------------------------------
-   7. Buttons and fields
-   -------------------------------------------------------------------------- */
-.osano-button {
-  background: var(--sun-violet) !important;
-  color: #FFFFFF !important;
-  border: 3px solid var(--sun-ink) !important;
-  border-radius: 999px !important;
-  box-shadow: 5px 5px 0 0 var(--sun-ink);
-  padding: 0.85rem 2.2rem;
-  font-family: "Syne", "Helvetica Neue", Arial, sans-serif;
+.osano-root .osano-card-list__card .osano-card__header {
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 15px;
-  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  color: var(--theme-ink);
+  letter-spacing: -0.01em;
 }
 
-.osano-button:hover {
-  background: var(--sun-magenta) !important;
-  transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 0 var(--sun-ink);
+.osano-root .osano-card-list__card .osano-card__body {
+  color: #3A2C4F;
 }
 
-.osano-button:active {
+/* Arrow sits in a little circle and swings up on hover */
+.osano-root .osano-card-list__card .osano-card__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--theme-ink);
+  border-radius: var(--pill);
+  background: var(--theme-white);
+  color: var(--theme-ink);
+  transition:
+    transform 260ms var(--ease-pop),
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+.osano-root .osano-card-list__card:hover {
+  transform: translate(-3px, -3px) rotate(-0.75deg);
+  box-shadow: var(--pop-shadow-hover);
+}
+
+.osano-root .osano-card-list__card:hover .osano-card__icon {
+  transform: rotate(-45deg);
+  background: var(--theme-purple);
+  border-color: var(--theme-purple);
+  color: var(--theme-white);
+}
+
+.osano-root .osano-card-list__card:active {
   transform: translate(3px, 3px);
-  box-shadow: 1px 1px 0 0 var(--sun-ink);
+  box-shadow: 1px 1px 0 0 var(--theme-ink);
 }
 
-.osano-field label {
-  font-family: "Syne", "Helvetica Neue", Arial, sans-serif;
+.osano-root .osano-card-list__card:focus-visible {
+  outline: 3px solid var(--theme-yellow);
+  outline-offset: 4px;
+}
+
+/* 9. Buttons, fields, location select ------------------------------------- */
+.osano-root .osano-location-select__open-button {
+  background: var(--theme-white);
+  border: 2px solid var(--theme-ink);
+  border-radius: var(--pill);
+  color: var(--theme-ink);
+  font-weight: 600;
+  box-shadow: 3px 3px 0 0 var(--theme-ink);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.osano-root .osano-location-select__open-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--theme-ink);
+}
+
+.osano-root .osano-location-select__open-chevron {
+  color: var(--theme-ink);
+}
+
+.osano-root .osano-button {
+  background: var(--theme-purple);
+  color: var(--theme-white);
+  border: 2.5px solid var(--theme-ink);
+  border-radius: var(--pill);
+  box-shadow: 5px 5px 0 0 var(--theme-ink);
+  padding: 0.85rem 2.2rem;
+  font-family: var(--font-display);
   font-weight: 700;
-  color: var(--sun-ink);
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
-.osano-input {
-  background: #FFFFFF !important;
-  border: 2px solid var(--sun-ink) !important;
-  border-radius: 0 14px 0 14px !important;
-  color: var(--sun-ink) !important;
+.osano-root .osano-button:hover {
+  background: #6A2EE0;
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 var(--theme-ink);
 }
 
-.osano-input:focus {
+.osano-root .osano-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 var(--theme-ink);
+}
+
+.osano-root .osano-field label {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.osano-root .osano-input {
+  background: var(--theme-white);
+  border: 2px solid var(--theme-ink);
+  border-radius: 0 14px 0 14px;
+  color: var(--theme-ink);
+}
+
+.osano-root .osano-input:focus {
   outline: none;
-  border-color: var(--sun-violet) !important;
-  box-shadow: 4px 4px 0 0 var(--sun-violet);
+  border-color: var(--theme-purple);
+  box-shadow: 4px 4px 0 0 var(--theme-purple);
 }
 
-/* --------------------------------------------------------------------------
-   8. Reduced motion
-   -------------------------------------------------------------------------- */
+/* 10. Motion preferences -------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .osano-form * {
-    transition: none !important;
-    transform: none !important;
+  .osano-root .osano-card-list__card,
+  .osano-root .osano-card__icon,
+  .osano-root .osano-button,
+  .osano-root .osano-location-select__open-button {
+    transition: none;
+  }
+
+  .osano-root .osano-card-list__card:hover,
+  .osano-root .osano-card-list__card:hover .osano-card__icon {
+    transform: none;
+  }
+}
+
+/* Browsers without backdrop-filter get a solid panel instead of glass */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .osano-root .osano-card,
+  .osano-root .osano-localization-message {
+    background: rgba(24, 13, 67, 0.82);
   }
 }
