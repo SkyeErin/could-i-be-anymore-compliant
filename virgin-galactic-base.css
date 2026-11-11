@@ -165,7 +165,8 @@ body {
 
 /* Form titles: targeted by data-testid since the class name is hashed
    and will change between Osano releases */
-.osano-root [data-testid="form-title"] {
+.osano-root [data-testid="form-title"],
+.osano-root [data-testid="form-description"] {
   color: var(--theme-white);
 }
 
