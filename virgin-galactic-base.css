@@ -146,8 +146,26 @@ body {
    Delete this block to bring it back. */
 .osano-root .osano-container__localization-message,
 .osano-root .osano-localization-message,
-.osano-root .osano-form__location-select {
+.osano-root .osano-form__location-select,
+.osano-root .osano-control-header,
+.osano-root .osano-container__control-header {
   display: none;
+}
+
+/* Remove the leftover top spacing so the rights card sits under the logo */
+.osano-root .osano-container {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.osano-root .osano-container > :first-child {
+  margin-top: 0;
+}
+
+/* Form titles: targeted by data-testid since the class name is hashed
+   and will change between Osano releases */
+.osano-root [data-testid="form-title"] {
+  color: var(--theme-white);
 }
 
 /* 6. Localization message ------------------------------------------------- */
