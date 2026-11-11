@@ -1,198 +1,258 @@
 /* ==========================================================================
-   Virgin Galactic theme for the Osano DSAR form
-   Works by redefining the form's --osano- design tokens, then overriding
-   the shared osano- BEM classes. Loaded after Osano's inline tokens, so
-   :root redefinitions win.
+   "Launch at Sunset" theme for the Osano DSAR form
+   Big gradient sky, leaf-cut corners, a tilted banner, and every request
+   tile in its own color with a hard offset shadow.
+
+   Some selectors below are pattern-matched ([class*="..."]) because the
+   tile, card, and banner class names aren't documented. Once we have the
+   real class names from DevTools, swap them in and drop the guesses.
    ========================================================================== */
 
-/* @import must stay at the very top of the file */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap");
 
 /* --------------------------------------------------------------------------
-   1. Tokens: this section does most of the work. Every card, input,
-      border, and text color in the form reads from these.
+   1. Tokens
    -------------------------------------------------------------------------- */
 :root {
-  /* Brand */
-  --osano-color-primary: #B7DEF3;              /* powder blue: focus ring, selected card, links, buttons */
-  --osano-color-primary-dark: #9CCDE8;
-  --osano-color-primary-readable: #060F1B;     /* text on top of primary */
-  --osano-color-primary-transparent: rgba(183, 222, 243, 0.35);
+  --sun-ink:     #1A0B2E;   /* outlines, titles */
+  --sun-plum:    #4A2A6E;   /* body copy */
+  --sun-violet:  #6B2BD9;
+  --sun-magenta: #F0388F;
+  --sun-orange:  #FF7A2F;
+  --sun-gold:    #FFC83D;
+  --sun-cream:   #FFF7EA;
 
-  /* Text */
-  --osano-color-primary-text: #FFFFFF;         /* titles, labels, field text */
-  --osano-color-text-secondary: #C9D1D8;
-  --osano-color-text-subtle: #8FAEC1;          /* card descriptions, subheads */
-  --osano-color-text-super-subtle: #5F7F94;    /* placeholders */
-  --osano-color-helper-text: #8FAEC1;
-  --osano-color-grayscale-950: #FFFFFF;
+  /* Tile colors, cycled across the grid */
+  --tile-1: #FFD8E8;  /* pink */
+  --tile-2: #CFF3FF;  /* sky */
+  --tile-3: #FFE9A8;  /* butter */
+  --tile-4: #D9CCFF;  /* lilac */
+  --tile-5: #C9F7D4;  /* mint */
+  --tile-6: #FFD3B8;  /* peach */
 
-  /* Surfaces */
-  --osano-color-bg-light-gray: #060F1B;        /* page area behind the form */
-  --osano-color-bg-card: #0C1928;              /* main card */
-  --osano-color-bg-table-header: #12253A;      /* jurisdiction banner */
-  --osano-color-bg-default: #0A1522;           /* inputs */
-  --osano-color-background: #0A1522;
-  --osano-color-background-dark: #081220;
-  --osano-color-bg-button-secondary: transparent;
+  /* Osano tokens */
+  --osano-color-primary: #6B2BD9;
+  --osano-color-primary-dark: #5A1FC4;
+  --osano-color-primary-readable: #FFFFFF;
+  --osano-color-primary-transparent: rgba(107, 43, 217, 0.35);
 
-  /* Borders */
-  --osano-color-border-subtle: rgba(183, 222, 243, 0.12);
-  --osano-color-border-default: rgba(183, 222, 243, 0.22);
+  --osano-color-primary-text: #1A0B2E;
+  --osano-color-text-secondary: #4A2A6E;
+  --osano-color-text-subtle: #4A2A6E;
+  --osano-color-text-super-subtle: #8B78A8;
+  --osano-color-helper-text: #4A2A6E;
+  --osano-color-grayscale-950: #1A0B2E;
 
-  /* States */
-  --osano-color-disabled-bg: #1C2C3D;
-  --osano-color-disabled-readable: #7094AA;
-  --osano-color-disabled-text: rgba(255, 255, 255, 0.4);
-  --osano-color-error: #FF7A7A;
-  --osano-color-error-dark: #F06262;
-  --osano-color-required: #FF7A7A;
-  --osano-color-success-bg: rgba(52, 211, 153, 0.12);
-  --osano-color-text-success: #6EE7B7;
+  --osano-color-bg-light-gray: transparent;
+  --osano-color-bg-card: #FFF7EA;
+  --osano-color-bg-table-header: #FFC83D;
+  --osano-color-bg-default: #FFFFFF;
+  --osano-color-background: #FFFFFF;
+  --osano-color-bg-button-secondary: #FFFFFF;
 
-  /* Shape: sharper than Osano's default, closer to VG */
-  --osano-radius-md: 2px;
-  --osano-radius-lg: 4px;
-  --osano-shadow-xl: 0 24px 64px 0 rgba(0, 0, 0, 0.45);
+  --osano-color-border-subtle: #1A0B2E;
+  --osano-color-border-default: #1A0B2E;
 
-  /* Type */
-  --osano-font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --osano-color-error: #D7263D;
+  --osano-color-required: #F0388F;
 
-  --osano-heading-lg-size: 30px;
-  --osano-heading-lg-weight: 300;
-  --osano-heading-lg-line-height: 36px;
-  --osano-heading-lg-letter-spacing: -0.3px;
+  --osano-radius-md: 0 14px 0 14px;
+  --osano-radius-lg: 0 28px 0 28px;
+  --osano-shadow-xl: 10px 10px 0 0 #1A0B2E;
 
-  --osano-heading-sm-size: 17px;
-  --osano-heading-sm-weight: 400;
+  --osano-font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+
+  --osano-heading-lg-size: 40px;
+  --osano-heading-lg-weight: 800;
+  --osano-heading-lg-line-height: 44px;
+  --osano-heading-lg-letter-spacing: -1px;
+
+  --osano-heading-sm-size: 19px;
+  --osano-heading-sm-weight: 700;
   --osano-heading-sm-line-height: 24px;
-  --osano-heading-sm-letter-spacing: 0;
+  --osano-heading-sm-letter-spacing: -0.2px;
 
   --osano-body-size: 15px;
   --osano-body-weight: 400;
   --osano-body-line-height: 22px;
 
-  --osano-caption-size: 11px;
-  --osano-caption-weight: 500;
-  --osano-caption-line-height: 16px;
-  --osano-caption-letter-spacing: 1.8px;
-
-  --osano-font-weight-medium: 500;
+  --osano-caption-size: 14px;
+  --osano-caption-weight: 400;
+  --osano-caption-line-height: 20px;
+  --osano-caption-letter-spacing: 0;
 }
 
 /* --------------------------------------------------------------------------
-   2. Page + form shell
+   2. The sky
    -------------------------------------------------------------------------- */
+html, body {
+  min-height: 100%;
+}
+
 body {
-  background: #060F1B;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background:
+    radial-gradient(circle at 85% 12%, rgba(255, 200, 61, 0.9) 0, rgba(255, 200, 61, 0) 22%),
+    radial-gradient(ellipse at 10% 90%, rgba(107, 43, 217, 0.55) 0, rgba(107, 43, 217, 0) 45%),
+    linear-gradient(160deg, #3B0F7A 0%, #8A1FA8 28%, #F0388F 55%, #FF7A2F 80%, #FFC83D 100%)
+    !important;
+  background-attachment: fixed !important;
+  color: var(--sun-ink);
 }
 
 .osano-form {
-  padding: 3rem 2.5rem;
-  color: var(--osano-color-text-secondary);
+  padding: 3.5rem 2.5rem 4rem;
+  background: transparent !important;
 }
 
-/* Headings in Montserrat, light weight, the VG display look */
+/* --------------------------------------------------------------------------
+   3. Headings
+   -------------------------------------------------------------------------- */
 .osano-form h1,
 .osano-form h2,
 .osano-form h3 {
-  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-weight: 300;
-  color: #FFFFFF;
-  letter-spacing: -0.01em;
+  font-family: "Syne", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 800 !important;
+  color: var(--sun-ink) !important;
+  letter-spacing: -0.03em;
 }
 
 .osano-form h4,
 .osano-form h5,
-.osano-form h6,
-.osano-form legend {
-  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-weight: 500;
-  color: #FFFFFF;
+.osano-form h6 {
+  font-family: "Syne", "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 700 !important;
+  color: var(--sun-ink) !important;
 }
 
-.osano-form a {
-  color: var(--osano-color-primary);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(183, 222, 243, 0.3);
-}
-.osano-form a:hover {
-  color: #FFFFFF;
-  border-bottom-color: #FFFFFF;
+.osano-form p {
+  letter-spacing: 0 !important;
 }
 
 /* --------------------------------------------------------------------------
-   3. Buttons: pill shape, uppercase, tracked out, like "Begin Journey"
+   4. Jurisdiction banner: tilted gold sticker
+   -------------------------------------------------------------------------- */
+.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]):not(select):not(option) {
+  background: var(--sun-gold) !important;
+  color: var(--sun-ink) !important;
+  border: 3px solid var(--sun-ink) !important;
+  border-radius: 0 32px 0 32px !important;
+  box-shadow: 8px 8px 0 0 var(--sun-ink) !important;
+  transform: rotate(-1.2deg);
+  font-weight: 500;
+}
+
+.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]) * {
+  color: var(--sun-ink) !important;
+}
+
+.osano-form :is([class*="jurisdiction"], [class*="Jurisdiction"], [class*="banner"], [class*="notice"], [class*="alert"]) select {
+  background-color: #FFFFFF !important;
+  border: 2px solid var(--sun-ink) !important;
+  border-radius: 999px !important;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   5. Main card: cream, leaf corners, chunky offset shadow
+   -------------------------------------------------------------------------- */
+.osano-form :is([class*="card"], [class*="Card"], [class*="panel"]):not(:is([class*="option"], [class*="request"], [class*="tile"])) {
+  background: var(--sun-cream) !important;
+  border: 3px solid var(--sun-ink) !important;
+  border-radius: 0 56px 0 56px !important;
+  box-shadow: 14px 14px 0 0 var(--sun-ink) !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. Request tiles: every one a different color, tilt on hover
+   -------------------------------------------------------------------------- */
+.osano-form :is(
+  [class*="request-type"], [class*="requestType"], [class*="RequestType"],
+  [class*="option"], [class*="tile"], [class*="choice"],
+  button:not(.osano-button)
+):not(select):not(option):not(input) {
+  position: relative;
+  background: var(--tile-1) !important;
+  border: 3px solid var(--sun-ink) !important;
+  border-radius: 0 24px 0 24px !important;
+  box-shadow: 6px 6px 0 0 var(--sun-ink) !important;
+  color: var(--sun-ink) !important;
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+2) { background: var(--tile-2) !important; border-radius: 24px 0 24px 0 !important; }
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+3) { background: var(--tile-3) !important; border-radius: 24px 0 24px 0 !important; }
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+4) { background: var(--tile-4) !important; }
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+5) { background: var(--tile-5) !important; }
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):nth-child(6n+6) { background: var(--tile-6) !important; border-radius: 24px 0 24px 0 !important; }
+
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)) * {
+  color: var(--sun-ink) !important;
+  letter-spacing: 0 !important;
+}
+
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):hover {
+  transform: translate(-3px, -3px) rotate(-1deg);
+  box-shadow: 10px 10px 0 0 var(--sun-magenta) !important;
+}
+
+.osano-form :is([class*="request-type"], [class*="requestType"], [class*="RequestType"], [class*="option"], [class*="tile"], [class*="choice"], button:not(.osano-button)):focus-visible {
+  outline: 3px dashed var(--sun-violet);
+  outline-offset: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Buttons and fields
    -------------------------------------------------------------------------- */
 .osano-button {
-  border-radius: 999px;
-  padding: 0.85rem 2rem;
-  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
+  background: var(--sun-violet) !important;
+  color: #FFFFFF !important;
+  border: 3px solid var(--sun-ink) !important;
+  border-radius: 999px !important;
+  box-shadow: 5px 5px 0 0 var(--sun-ink);
+  padding: 0.85rem 2.2rem;
+  font-family: "Syne", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
 .osano-button:hover {
-  background-color: #FFFFFF;
-  border-color: #FFFFFF;
-  color: #060F1B;
+  background: var(--sun-magenta) !important;
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 var(--sun-ink);
 }
 
-.osano-button:focus-visible {
-  outline: 2px solid var(--osano-color-primary);
-  outline-offset: 3px;
+.osano-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 0 var(--sun-ink);
 }
 
-/* --------------------------------------------------------------------------
-   4. Fields: underline inputs on dark, VG style
-   -------------------------------------------------------------------------- */
 .osano-field label {
-  font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--osano-color-text-subtle);
+  font-family: "Syne", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: var(--sun-ink);
 }
 
 .osano-input {
-  background-color: var(--osano-color-bg-default);
-  border: 1px solid var(--osano-color-border-default);
-  color: #FFFFFF;
-  transition: border-color 300ms ease, box-shadow 300ms ease;
-}
-
-.osano-input::placeholder {
-  color: var(--osano-color-text-super-subtle);
-}
-
-.osano-input:hover {
-  border-color: rgba(183, 222, 243, 0.45);
+  background: #FFFFFF !important;
+  border: 2px solid var(--sun-ink) !important;
+  border-radius: 0 14px 0 14px !important;
+  color: var(--sun-ink) !important;
 }
 
 .osano-input:focus {
-  border-color: var(--osano-color-primary);
-  box-shadow: 0 0 0 3px rgba(183, 222, 243, 0.15);
   outline: none;
-}
-
-/* Native select dropdown list on dark backgrounds */
-.osano-form select option {
-  background: #0C1928;
-  color: #FFFFFF;
+  border-color: var(--sun-violet) !important;
+  box-shadow: 4px 4px 0 0 var(--sun-violet);
 }
 
 /* --------------------------------------------------------------------------
-   5. Reduced motion
+   8. Reduced motion
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .osano-button,
-  .osano-input {
-    transition: none;
+  .osano-form * {
+    transition: none !important;
+    transform: none !important;
   }
 }
